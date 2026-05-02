@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupplAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:#f0ede8;color:#1a1612;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 15%,rgba(245,166,35,0.09),transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(74,144,217,0.06),transparent 55%);pointer-events:none;z-index:0;}
+
+#app{max-width:480px;margin:0 auto;padding:0 18px 80px;position:relative;z-index:1;}
+
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:24px;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.logo b{background:linear-gradient(135deg,#f5a623,#e8920a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal;}
+.logo small{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;color:#a09a94;margin-top:-2px;}
+
+/* Alle tippbaren Elemente – cursor:pointer + touch-action */
+button, .tipp {
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.btn-hdr{background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.9);border-radius:100px;padding:8px 14px;font-size:12px;font-weight:600;color:#6b6560;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+.screen{display:none;}
+.screen.on{display:block;animation:auf 0.3s ease;}
+@keyframes auf{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+.karte{background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.92);border-radius:24px;box-shadow:0 8px 36px rgba(0,0,0,0.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:26px;margin-bottom:14px;}
+
+.btn-haupt{display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;border:none;border-radius:100px;padding:15px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;box-shadow:0 6px 22px rgba(245,166,35,0.38);}
+.btn-haupt-auto{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;border:none;border-radius:100px;padding:12px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;box-shadow:0 5px 18px rgba(245,166,35,0.35);}
+.btn-hell{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.82);border:1.5px solid rgba(0,0,0,0.1);border-radius:100px;padding:12px 22px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:#6b6560;}
+.btn-ghost{background:none;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#a09a94;padding:10px 14px;border-radius:12px;}
+
+/* START */
+.start-hero{text-align:center;padding:10px 0 28px;}
+.live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:#e8920a;margin-bottom:22px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#f5a623;animation:puls 2s infinite;}
+@keyframes puls{0%,100%{opacity:1;}50%{opacity:0.25;}}
+.start-hero h1{font-family:'Playfair Display',serif;font-size:clamp(30px,7vw,40px);font-weight:800;line-height:1.15;letter-spacing:-0.8px;margin-bottom:14px;}
+.start-hero h1 span{background:linear-gradient(135deg,#f5a623,#e8920a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.start-hero p{font-size:15px;color:#6b6560;line-height:1.7;margin-bottom:28px;}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:26px;}
+.feat{background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:14px 8px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.05);}
+.feat .emo{font-size:22px;margin-bottom:6px;}
+.feat strong{display:block;font-size:12px;font-weight:700;margin-bottom:3px;}
+.feat span{font-size:10px;color:#a09a94;line-height:1.4;}
+
+/* QUIZ */
+.prog-wrap{margin-bottom:18px;}
+.prog-bar{height:5px;background:rgba(0,0,0,0.07);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#f5a623,#f0c14b);border-radius:3px;transition:width 0.4s ease;}
+.prog-txt{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09a94;text-align:right;}
+.quiz-tag{display:inline-flex;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;color:#e8920a;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:14px;}
+.quiz-q{font-family:'Playfair Display',serif;font-size:clamp(18px,5vw,24px);font-weight:700;line-height:1.25;margin-bottom:8px;}
+.quiz-hint{font-size:13px;color:#a09a94;margin-bottom:22px;line-height:1.55;}
+
+.aw-liste{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.aw-liste.zwei{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.aw-btn{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.85);border-radius:14px;padding:12px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:500;color:#1a1612;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,0.04);width:100%;}
+.aw-btn.gewaehlt{background:rgba(245,166,35,0.1);border-color:#f5a623;box-shadow:0 4px 18px rgba(245,166,35,0.16);}
+.aw-key{width:28px;height:28px;border-radius:7px;flex-shrink:0;background:rgba(0,0,0,0.05);border:1.5px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:#a09a94;}
+.aw-btn.gewaehlt .aw-key{background:#f5a623;border-color:#f5a623;color:#fff;}
+.aw-haken{margin-left:auto;width:20px;height:20px;border-radius:50%;background:#f5a623;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;flex-shrink:0;}
+.aw-btn.gewaehlt .aw-haken{opacity:1;}
+
+.num-wrap{margin-bottom:22px;position:relative;}
+.num-inp{width:100%;background:rgba(255,255,255,0.7);border:1.5px solid rgba(255,255,255,0.9);border-radius:14px;padding:16px 56px 16px 20px;font-size:26px;font-family:'JetBrains Mono',monospace;font-weight:500;color:#1a1612;box-shadow:0 2px 10px rgba(0,0,0,0.05);-webkit-appearance:none;appearance:none;}
+.num-inp:focus{border-color:#f5a623;outline:none;background:#fff;}
+.num-einheit{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:13px;color:#a09a94;font-family:'JetBrains Mono',monospace;}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:4px;}
+
+/* LOGIN */
+.login-karte{padding:32px;text-align:center;}
+.login-ava{width:64px;height:64px;border-radius:50%;margin:0 auto 18px;background:rgba(245,166,35,0.12);border:2px solid rgba(245,166,35,0.25);display:flex;align-items:center;justify-content:center;font-size:28px;}
+.login-karte h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;margin-bottom:8px;}
+.login-karte p{font-size:13px;color:#6b6560;margin-bottom:22px;line-height:1.6;}
+.feld-label{display:block;font-size:11px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#a09a94;text-align:left;margin-bottom:6px;}
+.feld-inp{width:100%;background:rgba(255,255,255,0.7);border:1.5px solid rgba(0,0,0,0.09);border-radius:12px;padding:12px 14px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:#1a1612;}
+.feld-inp:focus{border-color:#f5a623;outline:none;background:#fff;}
+.feld-gruppe{margin-bottom:13px;text-align:left;}
+.login-aktionen{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+
+/* DASHBOARD */
+.profil-kopf{background:rgba(255,255,255,0.88);border:1px solid rgba(255,255,255,0.95);border-radius:24px;padding:22px;margin-bottom:14px;box-shadow:0 12px 48px rgba(0,0,0,0.1);position:relative;overflow:hidden;}
+.profil-oben{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.profil-ava{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:rgba(245,166,35,0.12);border:2px solid rgba(245,166,35,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.profil-titel{font-family:'Playfair Display',serif;font-size:18px;font-weight:800;margin-bottom:2px;}
+.profil-sub{font-size:12px;color:#a09a94;}
+.woche-badge{margin-left:auto;background:linear-gradient(135deg,#f5a623,#f0c14b);color:#fff;border-radius:100px;padding:5px 13px;font-size:11px;font-weight:700;white-space:nowrap;}
+.abschnitt-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a09a94;margin-bottom:9px;}
+.daten-raster{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.daten-kachel{background:rgba(248,245,240,0.8);border:1px solid rgba(0,0,0,0.05);border-radius:14px;padding:13px;}
+.kachel-label{font-size:10px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#a09a94;margin-bottom:5px;}
+.kachel-wert{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;line-height:1.1;margin-bottom:2px;}
+.kachel-sub{font-size:11px;color:#6b6560;}
+.bmi-leiste{height:4px;background:rgba(0,0,0,0.07);border-radius:2px;margin-top:7px;overflow:hidden;}
+.bmi-fill{height:100%;border-radius:2px;}
+.ziele-zeile{display:flex;flex-wrap:wrap;gap:7px;}
+.ziel-pill{display:flex;align-items:center;gap:5px;background:rgba(245,166,35,0.09);border:1.5px solid rgba(245,166,35,0.3);border-radius:100px;padding:6px 13px;font-size:13px;font-weight:600;color:#e8920a;}
+.f-zeile{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.f-label{font-size:13px;font-weight:600;}
+.f-pct{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#f5a623;}
+.f-balken{height:6px;background:rgba(0,0,0,0.07);border-radius:3px;overflow:hidden;margin-bottom:5px;}
+.f-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#f5a623,#f0c14b);}
+.plan-slot{margin-bottom:16px;}
+.plan-slot:last-child{margin-bottom:0;}
+.plan-zeit-zeile{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.plan-punkt{width:8px;height:8px;border-radius:50%;background:#f5a623;flex-shrink:0;}
+.plan-zeit{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#e8920a;}
+.plan-items{display:flex;flex-direction:column;gap:5px;padding-left:17px;}
+.plan-item{background:rgba(248,245,240,0.9);border:1px solid rgba(0,0,0,0.05);border-radius:9px;padding:9px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.plan-name{font-size:13px;font-weight:600;}
+.plan-dosis{font-family:'JetBrains Mono',monospace;font-size:11px;color:#52b788;font-weight:500;background:#d8f3dc;padding:3px 8px;border-radius:5px;flex-shrink:0;}
+.produkt-teaser{background:rgba(245,166,35,0.06);border:1.5px solid rgba(245,166,35,0.18);border-radius:18px;padding:16px;display:flex;align-items:center;gap:13px;}
+.produkt-ikon{width:50px;height:50px;border-radius:13px;flex-shrink:0;background:rgba(245,166,35,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.produkt-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-bottom:3px;}
+.produkt-preis{font-size:13px;color:#6b6560;margin-bottom:5px;}
+.produkt-tag{display:inline-flex;background:linear-gradient(135deg,#f5a623,#f0c14b);color:#fff;border-radius:100px;padding:2px 10px;font-size:11px;font-weight:700;}
+.trust-zeile{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.trust{font-size:11px;font-weight:600;color:#a09a94;display:flex;align-items:center;gap:4px;}
+.trust::before{content:'✓';color:#52b788;font-weight:700;}
+.disclaimer{text-align:center;font-size:11px;color:#a09a94;line-height:1.5;padding:10px 0;}
+.sektion-titel{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a09a94;margin-bottom:11px;margin-top:20px;}
+.abstand{height:14px;}
+
+/* PRODUKT FLOW */
+.flow-nav{display:flex;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.9);border-radius:100px;padding:4px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+.flow-schritt{flex:1;text-align:center;padding:9px 6px;border-radius:100px;font-size:12px;font-weight:600;color:#a09a94;transition:all 0.25s;}
+.flow-schritt.aktiv{background:linear-gradient(135deg,#f5a623,#f0c14b);color:#fff;}
+.flow-schritt.fertig{color:#52b788;}
+.paket-karte{background:rgba(255,255,255,0.72);border:2px solid rgba(255,255,255,0.88);border-radius:22px;padding:20px;margin-bottom:11px;box-shadow:0 3px 14px rgba(0,0,0,0.06);position:relative;}
+.paket-karte.gewaehlt{border-color:#f5a623;background:rgba(245,166,35,0.07);}
+.empf-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:100px;white-space:nowrap;}
+.paket-kopf{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;}
+.paket-titel{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
+.paket-unter{font-size:12px;color:#a09a94;margin-top:2px;}
+.paket-preis-val{font-family:'Playfair Display',serif;font-size:21px;font-weight:800;color:#e8920a;text-align:right;}
+.paket-preis-mo{font-size:11px;color:#a09a94;display:block;text-align:right;}
+.zutaten{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+.zutat{background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.07);border-radius:6px;padding:2px 9px;font-size:11px;color:#6b6560;}
+.paket-warum{margin-top:11px;font-size:12px;color:#52b788;background:#d8f3dc;border-radius:9px;padding:8px 12px;display:none;line-height:1.5;}
+.paket-karte.gewaehlt .paket-warum{display:block;}
+.qual-raster{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:20px;}
+.qual-kachel{background:rgba(255,255,255,0.72);border:2px solid rgba(255,255,255,0.88);border-radius:16px;padding:16px 13px;}
+.qual-kachel.gewaehlt{border-color:#f5a623;background:rgba(245,166,35,0.07);}
+.qual-emo{font-size:22px;margin-bottom:7px;}
+.qual-lbl{font-size:13px;font-weight:700;color:#1a1612;margin-bottom:2px;}
+.qual-desc{font-size:11px;color:#a09a94;}
+.marken-liste{display:flex;flex-direction:column;gap:9px;margin-bottom:20px;}
+.marke-kachel{background:rgba(255,255,255,0.72);border:2px solid rgba(255,255,255,0.88);border-radius:16px;padding:15px 17px;display:flex;align-items:center;gap:13px;}
+.marke-kachel.gewaehlt{border-color:#f5a623;background:rgba(245,166,35,0.07);}
+.marke-iko{width:42px;height:42px;border-radius:11px;flex-shrink:0;background:rgba(248,245,240,0.9);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.marke-name{font-size:14px;font-weight:700;}
+.marke-desc{font-size:12px;color:#a09a94;margin-top:2px;}
+.ergebnis-karte{background:rgba(255,255,255,0.88);border:1.5px solid rgba(255,255,255,0.95);border-radius:22px;padding:20px;margin-bottom:11px;box-shadow:0 6px 28px rgba(0,0,0,0.08);position:relative;}
+.ergebnis-karte.top{border-color:rgba(245,166,35,0.4);background:rgba(245,166,35,0.05);}
+.top-label{position:absolute;top:13px;right:13px;background:linear-gradient(135deg,#f5a623,#f0c14b);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;}
+.er-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:3px;}
+.er-marke{font-size:12px;color:#a09a94;margin-bottom:11px;}
+.er-meta{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+.er-preis{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#e8920a;}
+.er-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.er-tag{background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.07);border-radius:6px;padding:2px 9px;font-size:11px;color:#6b6560;}
+.er-tag.bio{background:#d8f3dc;border-color:rgba(82,183,136,0.3);color:#52b788;}
+.btn-shop{width:100%;background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;border:none;border-radius:100px;padding:13px;font-size:15px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 5px 16px rgba(245,166,35,0.3);}
+.flex-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.9);border-radius:100px;padding:11px 22px;font-size:13px;font-weight:600;color:#1a1612;box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:9999;transition:transform 0.3s ease;white-space:nowrap;}
+.toast.zeigen{transform:translateX(-50%) translateY(0);}
+@media(max-width:420px){.feat-grid{grid-template-columns:1fr;}.aw-liste.zwei{grid-template-columns:1fr;}.daten-raster{grid-template-columns:1fr;}.qual-raster{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="hdr">
+    <div class="logo">Suppl<b>AI</b><small>Dein Supplement-Berater</small></div>
+    <button class="btn-hdr" id="btn-reset">↺ Neu</button>
+  </header>
+
+  <div id="s-start" class="screen on">
+    <div class="start-hero">
+      <div class="live-badge"><div class="live-dot"></div>KI-gestützt · Evidenzbasiert</div>
+      <h1>Dein Plan.<br><span>Persönlich.</span></h1>
+      <p>8 Fragen – dein vollständiger Einnahmeplan mit personalisierten Dosierungen und Produktempfehlungen.</p>
+      <button class="btn-haupt" id="btn-start">Quiz starten →</button>
+    </div>
+    <div class="feat-grid">
+      <div class="feat"><div class="emo">🧬</div><strong>Dosierung</strong><span>Nach kg & Ziel</span></div>
+      <div class="feat"><div class="emo">🎯</div><strong>Matching</strong><span>9 Kategorien</span></div>
+      <div class="feat"><div class="emo">📊</div><strong>Dashboard</strong><span>BMI & Plan</span></div>
+    </div>
+    <div class="karte" style="text-align:center;">
+      <div style="font-size:11px;color:#a09a94;line-height:1.6;">✓ Keine med. Diagnosen &nbsp;·&nbsp; ✓ EU-konform &nbsp;·&nbsp; ✓ DSGVO-sicher<br>Bei gesundheitlichen Fragen bitte einen Arzt konsultieren.</div>
+    </div>
+  </div>
+
+  <div id="s-quiz" class="screen">
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-txt" id="prog-txt">0 / 8</div>
+    </div>
+    <div class="karte" id="quiz-box" style="padding:28px;"></div>
+  </div>
+
+  <div id="s-login" class="screen">
+    <div class="karte login-karte">
+      <div class="login-ava">👋</div>
+      <h2>Fast geschafft!</h2>
+      <p>Speichere dein Profil – oder überspringe diesen Schritt.</p>
+      <div class="feld-gruppe"><label class="feld-label">Dein Name</label><input type="text" class="feld-inp" id="inp-name" placeholder="Max Mustermann"></div>
+      <div class="feld-gruppe"><label class="feld-label">E-Mail</label><input type="email" class="feld-inp" id="inp-email" placeholder="max@beispiel.at"></div>
+      <div class="login-aktionen">
+        <button class="btn-haupt" id="btn-login-save">Profil speichern →</button>
+        <button class="btn-ghost" id="btn-login-skip" style="text-align:center;">Überspringen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-dash" class="screen"></div>
+  <div id="s-prod" class="screen"></div>
+
+</div>
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// SUPPLAI v4 – addEventListener only, iOS Safari kompatibel
+// ============================================================
+
+// ===== STATE =====
+var AW = {};
+var NP = { name: '', email: '' };
+var PA = { paket: null, qual: [], marke: null };
+var qIdx = 0;
+var multiSel = [];
+var fQueue = [];
+
+// ===== SCREEN =====
+function zeige(id) {
+  var all = document.querySelectorAll('.screen');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
+  var el = document.getElementById(id);
+  if (el) { el.classList.add('on'); window.scrollTo(0, 0); }
+}
+
+// ===== FRAGEN =====
+function initQueue() {
+  fQueue = [
+    { id:'intro',     typ:'choice', tag:'Schritt 1', frage:'Wie alt bist du?',            hint:'Beeinflusst Vitamin-D & Magnesium-Empfehlungen.', opts:[{k:'A',l:'Unter 18'},{k:'B',l:'18–25'},{k:'C',l:'26–35'},{k:'D',l:'36–45'},{k:'E',l:'Über 45'}] },
+    { id:'geschlecht',typ:'choice', tag:'Schritt 2', frage:'Biologisches Geschlecht?',    hint:'Wichtig für Eisen-, Magnesium- und Proteindosierung.', opts:[{k:'A',l:'Männlich'},{k:'B',l:'Weiblich'},{k:'C',l:'Keine Angabe'}] },
+    { id:'groesse',   typ:'nummer', tag:'Schritt 3', frage:'Wie groß bist du?',            hint:'Basis für die BMI-Berechnung.', einheit:'cm', min:140, max:220, std:175 },
+    { id:'gewicht',   typ:'nummer', tag:'Schritt 4', frage:'Wie viel wiegst du?',          hint:'Grundlage für deine Proteindosierung.', einheit:'kg', min:40, max:200, std:75 },
+    { id:'training',  typ:'choice', tag:'Schritt 5', frage:'Deine Trainingsform?',         hint:'Bestimmt deinen Energie- und Nährstoffbedarf.', opts:[{k:'A',l:'Kraft 4+x/Wo'},{k:'B',l:'Kraft 2-3x/Wo'},{k:'C',l:'Cardio'},{k:'D',l:'Mix'},{k:'E',l:'Wenig Sport'}] },
+    { id:'ziele',     typ:'multi',  tag:'Schritt 6', frage:'Deine Ziele?',                 hint:'Mehrfachauswahl möglich.', opts:[{k:'A',l:'Muskelaufbau'},{k:'B',l:'Fettabbau'},{k:'C',l:'Mehr Energie'},{k:'D',l:'Ausdauer'},{k:'E',l:'Regeneration'},{k:'F',l:'Gesundheit'}] },
+    { id:'ernaehrung',typ:'choice', tag:'Schritt 7', frage:'Deine Ernährungsweise?',       hint:'Bestimmt ob tierische Produkte empfohlen werden.', opts:[{k:'A',l:'Alles'},{k:'B',l:'Flexitarisch'},{k:'C',l:'Vegetarisch'},{k:'D',l:'Vegan'}] },
+    { id:'vorhanden', typ:'multi',  tag:'Schritt 8', frage:'Supplements die du nimmst?',   hint:'So vermeiden wir Doppelungen.', exkl:'A', opts:[{k:'A',l:'Noch nichts'},{k:'B',l:'Protein'},{k:'C',l:'Kreatin'},{k:'D',l:'Vitamin D'},{k:'E',l:'Omega-3'},{k:'F',l:'Magnesium'},{k:'G',l:'Vitamin B12'},{k:'H',l:'Sonstiges'}] },
+  ];
+}
+
+function injiziereDyn(id, val) {
+  if (id === 'training' && (val === 'A' || val === 'B')) {
+    var schon = false;
+    for (var i = 0; i < fQueue.length; i++) { if (fQueue[i].id === 'trainingsphase') schon = true; }
+    if (!schon) {
+      var tp = { id:'trainingsphase', typ:'choice', tag:'Extra', frage:'In welcher Trainingsphase?', hint:'Hilft uns deine Supplements optimal anzupassen.', opts:[{k:'A',l:'Aufbau (Bulk)'},{k:'B',l:'Definition (Cut)'},{k:'C',l:'Erhaltung'},{k:'D',l:'Wettkampf'}] };
+      var pos = 0;
+      for (var j = 0; j < fQueue.length; j++) { if (fQueue[j].id === 'training') pos = j; }
+      fQueue.splice(pos + 1, 0, tp);
+    }
+  }
+}
+
+// ===== QUIZ RENDER =====
+function renderFrage() {
+  var f = fQueue[qIdx];
+  var tot = fQueue.length;
+  var pct = Math.round((qIdx / tot) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = qIdx + ' / ' + tot;
+  multiSel = [];
+
+  var h = '<div class="quiz-tag">' + (f.tag || 'Schritt') + '</div>';
+  h += '<div class="quiz-q">' + f.frage + '</div>';
+  h += '<div class="quiz-hint">' + (f.hint || '') + '</div>';
+
+  if (f.typ === 'choice') {
+    var cls = f.opts.length <= 3 ? 'aw-liste' : 'aw-liste zwei';
+    h += '<div class="' + cls + '" id="aw-container">';
+    for (var i = 0; i < f.opts.length; i++) {
+      var vorhin = AW[f.id] === f.opts[i].k ? ' gewaehlt' : '';
+      h += '<button class="aw-btn tipp' + vorhin + '" data-typ="choice" data-k="' + f.opts[i].k + '">';
+      h += '<span class="aw-key">' + f.opts[i].k + '</span>';
+      h += '<span>' + f.opts[i].l + '</span>';
+      h += '<span class="aw-haken">&#10003;</span>';
+      h += '</button>';
+    }
+    h += '</div>';
+    h += '<div class="quiz-nav"><button class="btn-ghost tipp" id="btn-zurueck">← Zurück</button></div>';
+  }
+
+  if (f.typ === 'multi') {
+    h += '<div class="aw-liste" id="aw-container">';
+    for (var i = 0; i < f.opts.length; i++) {
+      h += '<button class="aw-btn tipp" data-typ="multi" data-k="' + f.opts[i].k + '" data-exkl="' + (f.exkl || '') + '">';
+      h += '<span class="aw-key">' + f.opts[i].k + '</span>';
+      h += '<span>' + f.opts[i].l + '</span>';
+      h += '<span class="aw-haken">&#10003;</span>';
+      h += '</button>';
+    }
+    h += '</div>';
+    h += '<div class="quiz-nav"><button class="btn-ghost tipp" id="btn-zurueck">← Zurück</button><button class="btn-haupt-auto tipp" id="btn-weiter">Weiter →</button></div>';
+  }
+
+  if (f.typ === 'nummer') {
+    h += '<div class="num-wrap"><input type="number" class="num-inp" id="num-inp" min="' + f.min + '" max="' + f.max + '" value="' + f.std + '" inputmode="numeric"><span class="num-einheit">' + f.einheit + '</span></div>';
+    h += '<div class="quiz-nav"><button class="btn-ghost tipp" id="btn-zurueck">← Zurück</button><button class="btn-haupt-auto tipp" id="btn-weiter">Weiter →</button></div>';
+  }
+
+  document.getElementById('quiz-box').innerHTML = h;
+  bindQuizEvents(f);
+}
+
+function bindQuizEvents(f) {
+  // Zurück
+  var btnZ = document.getElementById('btn-zurueck');
+  if (btnZ) {
+    btnZ.addEventListener('click', function() {
+      if (qIdx > 0) { qIdx--; renderFrage(); }
+      else { zeige('s-start'); }
+    });
+  }
+
+  // Weiter
+  var btnW = document.getElementById('btn-weiter');
+  if (btnW) {
+    btnW.addEventListener('click', function() {
+      if (f.typ === 'multi') {
+        if (multiSel.length === 0) { toast('Bitte wähle mindestens eine Option.'); return; }
+        AW[f.id] = multiSel.slice();
+      } else if (f.typ === 'nummer') {
+        var v = document.getElementById('num-inp').value;
+        if (!v || parseFloat(v) < f.min || parseFloat(v) > f.max) { toast('Bitte ' + f.min + '–' + f.max + ' eingeben.'); return; }
+        AW[f.id] = v;
+      }
+      naechste();
+    });
+  }
+
+  // Auswahl-Buttons
+  var container = document.getElementById('aw-container');
+  if (container) {
+    var btns = container.querySelectorAll('.aw-btn');
+    for (var i = 0; i < btns.length; i++) {
+      (function(btn) {
+        btn.addEventListener('click', function() {
+          var typ  = btn.getAttribute('data-typ');
+          var k    = btn.getAttribute('data-k');
+          var exkl = btn.getAttribute('data-exkl');
+
+          if (typ === 'choice') {
+            // Alle deselektieren
+            var alle = container.querySelectorAll('.aw-btn');
+            for (var j = 0; j < alle.length; j++) alle[j].classList.remove('gewaehlt');
+            btn.classList.add('gewaehlt');
+            AW[f.id] = k;
+            injiziereDyn(f.id, k);
+            setTimeout(function() { naechste(); }, 280);
+          }
+
+          if (typ === 'multi') {
+            if (exkl && k === exkl) {
+              var alle2 = container.querySelectorAll('.aw-btn');
+              for (var j = 0; j < alle2.length; j++) alle2[j].classList.remove('gewaehlt');
+              multiSel = [k];
+              btn.classList.add('gewaehlt');
+            } else {
+              // Exklusiv-Option entfernen
+              if (exkl) {
+                var exBtn = null;
+                var alle3 = container.querySelectorAll('.aw-btn');
+                for (var j = 0; j < alle3.length; j++) {
+                  if (alle3[j].getAttribute('data-k') === exkl) exBtn = alle3[j];
+                }
+                if (exBtn) exBtn.classList.remove('gewaehlt');
+                multiSel = multiSel.filter(function(x) { return x !== exkl; });
+              }
+              if (btn.classList.contains('gewaehlt')) {
+                btn.classList.remove('gewaehlt');
+                multiSel = multiSel.filter(function(x) { return x !== k; });
+              } else {
+                btn.classList.add('gewaehlt');
+                multiSel.push(k);
+              }
+            }
+          }
+        });
+      })(btns[i]);
+    }
+  }
+}
+
+function naechste() {
+  qIdx++;
+  if (qIdx >= fQueue.length) { zeige('s-login'); }
+  else { renderFrage(); }
+}
+
+// ===== DOSIERUNGS-ENGINE =====
+function dosis(supp, a) {
+  var kg = parseFloat(a.gewicht) || 75;
+  var w  = a.geschlecht === 'B', ki = a.training === 'A', tr = a.training !== 'E';
+  var mu = (a.ziele || []).indexOf('A') >= 0;
+  var pb = mu && ki ? Math.round(kg*2) : mu ? Math.round(kg*1.8) : tr ? Math.round(kg*1.6) : Math.round(kg*1.2);
+  var pp = w ? '20–25 g' : '25–35 g';
+  var kd = kg <= 70 ? '3 g' : '5 g';
+  var md = w ? (ki ? '300 mg' : '250 mg') : (ki ? '400 mg' : '350 mg');
+  var vd = (a.intro === 'D' || a.intro === 'E') ? '2.000 IE' : '1.000–2.000 IE';
+  var od = tr ? '2–3 g EPA/DHA' : '1–2 g EPA/DHA';
+  var ed = w ? '18 mg' : '10 mg';
+  var M = {
+    'Whey Protein':          { d:pp+' (Ziel: '+pb+' g)', z:'Nach dem Training' },
+    'Whey Isolat':           { d:pp+' (Ziel: '+pb+' g)', z:'Nach dem Training' },
+    'Pflanzenprotein':       { d:pp+' (Ziel: '+pb+' g)', z:'Nach dem Training' },
+    'Kreatin Monohydrat':    { d:kd+' täglich', z:'Täglich – egal wann' },
+    'Vitamin D3+K2':         { d:vd+' D3 + 100µg K2', z:'Morgens zum Frühstück' },
+    'Omega-3':               { d:od, z:'Zu einer Mahlzeit' },
+    'Omega-3 Algenöl':       { d:od, z:'Zu einer Mahlzeit' },
+    'Magnesium':             { d:md, z:'Abends vor dem Schlafen' },
+    'Magnesium Bisglycinat': { d:md, z:'Abends vor dem Schlafen' },
+    'Vitamin B12':           { d:'500µg Methylcobalamin', z:'Morgens nüchtern' },
+    'Vitamin C':             { d:'500–1.000 mg', z:'Morgens zum Frühstück' },
+    'Zink':                  { d:'15 mg', z:'Abends' },
+    'Eisen':                 { d:ed+' Bisglycinat', z:'Morgens nüchtern' },
+    'L-Carnitin':            { d:'1.000–2.000 mg', z:'Vor dem Training' },
+    'Beta-Alanin':           { d:'3,2 g', z:'Vor dem Training' },
+    'Elektrolyte':           { d:'1 Portion', z:'Während dem Training' },
+    'Ashwagandha KSM-66':    { d:'300–600 mg', z:'Abends vor dem Schlafen' },
+    'ZMA':                   { d:'1 Portion', z:'Abends vor dem Schlafen' },
+    'EAAs':                  { d:'10–15 g', z:'Während dem Training' },
+    'L-Glutamin':            { d:'5 g', z:'Nach dem Training' },
+    'Multivitamin':          { d:'1 Kapsel', z:'Morgens zum Frühstück' },
+  };
+  return M[supp] || { d:'Laut Produktangabe', z:'Täglich' };
+}
+
+function bauePlan(ings, a) {
+  var slots = {}, ord = ['Morgens nüchtern','Morgens zum Frühstück','Vor dem Training','Während dem Training','Nach dem Training','Zu einer Mahlzeit','Täglich – egal wann','Abends','Abends vor dem Schlafen'], res = [];
+  for (var i = 0; i < ings.length; i++) { var d = dosis(ings[i], a); if (!slots[d.z]) slots[d.z] = []; slots[d.z].push({ name:ings[i], dos:d.d }); }
+  for (var i = 0; i < ord.length; i++) { if (slots[ord[i]]) res.push({ zeit:ord[i], items:slots[ord[i]] }); }
+  return res;
+}
+
+// ===== KATEGORIE-MATCHING =====
+function getKat(a) {
+  var z=a.ziele||[], v=a.ernaehrung==='D', w=a.geschlecht==='B', k=a.training==='A'||a.training==='B', c=a.training==='C';
+  var mu=z.indexOf('A')>=0, fe=z.indexOf('B')>=0, au=z.indexOf('D')>=0, re=z.indexOf('E')>=0, he=z.indexOf('F')>=0;
+  if(v&&mu)return'vegan_muscle'; if(v)return'vegan_health'; if(w&&!mu&&!fe)return'female_balance';
+  if(mu&&k)return'muscle'; if(fe&&!mu)return'fat_loss'; if(au||c)return'endurance';
+  if(re&&!mu)return'recovery'; if(he)return'health'; return'starter';
+}
+
+// ===== PAKET-DATEN =====
+var PAKETE = {
+  muscle:[
+    {nr:1,name:'Sparpaket',sub:'Grundversorgung',preis:'19,90',ings:['Vitamin D3+K2','Omega-3','Magnesium'],warum:'Die 3 wichtigsten Mikronährstoffe für Gesundheit und Regeneration.',tags:['2.000 IE D3','2g EPA/DHA','350mg Mg']},
+    {nr:2,name:'Basispaket',sub:'Gelegentliche Sportler',preis:'34,90',ings:['Whey Protein','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Whey Protein als Fundament für den Muskelaufbau.',tags:['25g Protein','2.000 IE D3','Laktosefrei']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'54,90',empf:true,ings:['Whey Protein','Kreatin Monohydrat','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Kreatin + Whey = bewiesenste Kombi für Kraft und Muskelmasse.',tags:['25g Protein','5g Kreatin','Evidenzbasiert']},
+    {nr:4,name:'Pro-Paket',sub:'Ambitionierte Sportler',preis:'74,90',ings:['Whey Isolat','Kreatin Monohydrat','Ashwagandha KSM-66','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Isolat für maximale Reinheit, Ashwagandha gegen Cortisol.',tags:['90% Protein','KSM-66','Stressreduktion']},
+    {nr:5,name:'Elite-Paket',sub:'Vollständige Optimierung',preis:'99,90',ings:['Whey Isolat','Kreatin Monohydrat','Ashwagandha KSM-66','ZMA','EAAs','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Das komplette Arsenal für maximale Performance.',tags:['8 Supps','Hormonbalance','Elite']},
+  ],
+  vegan_muscle:[
+    {nr:1,name:'Sparpaket',sub:'Vegane Basis',preis:'22,90',ings:['Vitamin D3+K2','Omega-3 Algenöl','Magnesium Bisglycinat','Vitamin B12'],warum:'B12, D3, Omega-3 – die kritischen Nährstoffe für Veganer.',tags:['Algenöl','Methylcobalamin','100% vegan']},
+    {nr:2,name:'Basispaket',sub:'Pflanzliche Kraft',preis:'39,90',ings:['Pflanzenprotein','Vitamin D3+K2','Omega-3 Algenöl','Magnesium Bisglycinat','Vitamin B12'],warum:'Erbsen- und Reisprotein für vollständiges Aminosäurenspektrum.',tags:['25g Protein','Pflanzlich','Komplett']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'57,90',empf:true,ings:['Pflanzenprotein','Kreatin Monohydrat','Vitamin D3+K2','Omega-3 Algenöl','Magnesium Bisglycinat','Vitamin B12'],warum:'Kreatin ist vegan und hocheffektiv – mit Pflanzenprotein unschlagbar.',tags:['100% vegan','5g Kreatin','Laborgeprüft']},
+    {nr:4,name:'Pro-Paket',sub:'Vegane Performance',preis:'77,90',ings:['Pflanzenprotein','Kreatin Monohydrat','Ashwagandha KSM-66','Vitamin D3+K2','Omega-3 Algenöl','Magnesium Bisglycinat','Vitamin B12'],warum:'Ashwagandha KSM-66 – meistuntersuchter Adaptogen.',tags:['7 Supps','Adaptogen','Made in EU']},
+    {nr:5,name:'Elite-Paket',sub:'Vegane Volloptimierung',preis:'104,90',ings:['Pflanzenprotein','Kreatin Monohydrat','Ashwagandha KSM-66','ZMA','EAAs','Vitamin D3+K2','Omega-3 Algenöl','Magnesium Bisglycinat','Vitamin B12'],warum:'Das vollständige vegane Performance-System.',tags:['9 Supps','100% vegan','Elite']},
+  ],
+  fat_loss:[
+    {nr:1,name:'Sparpaket',sub:'Lean Basics',preis:'19,90',ings:['Vitamin D3+K2','Omega-3','Magnesium'],warum:'Omega-3 und Magnesium unterstützen den Fettstoffwechsel.',tags:['Kein Zucker','Stoffwechsel','Basis']},
+    {nr:2,name:'Basispaket',sub:'Lean & Strong',preis:'32,90',ings:['Whey Protein','Vitamin D3+K2','Omega-3','Magnesium'],warum:'High-Protein schützt Muskelmasse beim Abnehmen.',tags:['Muskelerhalt','Sättigung','Protein']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'49,90',empf:true,ings:['Whey Protein','L-Carnitin','Vitamin D3+K2','Omega-3','Magnesium'],warum:'L-Carnitin transportiert Fettsäuren in die Mitochondrien.',tags:['L-Carnitin 2g','Kalorienarm','Energie']},
+    {nr:4,name:'Pro-Paket',sub:'Advanced Fat Loss',preis:'69,90',ings:['Whey Isolat','L-Carnitin','Vitamin C','Vitamin D3+K2','Omega-3','Magnesium','Zink'],warum:'Vitamin C + Zink stärken das Immunsystem in der Diätphase.',tags:['7 Supps','Immunschutz','Shred']},
+    {nr:5,name:'Elite-Paket',sub:'Complete Shred Stack',preis:'89,90',ings:['Whey Isolat','L-Carnitin','Beta-Alanin','Elektrolyte','Vitamin C','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Beta-Alanin + Elektrolyte für maximale Cardio-Performance.',tags:['8 Supps','Performance','Elite Shred']},
+  ],
+  endurance:[
+    {nr:1,name:'Sparpaket',sub:'Ausdauer-Basics',preis:'17,90',ings:['Vitamin D3+K2','Omega-3','Magnesium'],warum:'Magnesium ist entscheidend bei Ausdauersport.',tags:['Krämpfe ↓','Anti-inflam.','Basis']},
+    {nr:2,name:'Basispaket',sub:'Energie & Ausdauer',preis:'29,90',ings:['Elektrolyte','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Elektrolyte ersetzen Natrium, Kalium, Magnesium.',tags:['Elektrolyte','Hydration','Ausdauer']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'44,90',empf:true,ings:['Whey Protein','Elektrolyte','Beta-Alanin','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Beta-Alanin puffert Laktat und verzögert Ermüdung.',tags:['Beta-Alanin 3,2g','Laktat-Puffer','Regen']},
+    {nr:4,name:'Pro-Paket',sub:'Advanced Endurance',preis:'64,90',ings:['Whey Protein','Elektrolyte','Beta-Alanin','L-Glutamin','Vitamin D3+K2','Omega-3','Magnesium'],warum:'L-Glutamin fördert Darmgesundheit bei hohem Volumen.',tags:['7 Supps','Gut Health','Immunschutz']},
+    {nr:5,name:'Elite-Paket',sub:'Elite Endurance Stack',preis:'84,90',ings:['Whey Protein','Kreatin Monohydrat','Elektrolyte','Beta-Alanin','L-Carnitin','L-Glutamin','Vitamin D3+K2','Omega-3','Magnesium'],warum:'Kreatin steigert Schnellkraft und Erholung.',tags:['9 Supps','Vollständig','Profi']},
+  ],
+  recovery:[
+    {nr:1,name:'Sparpaket',sub:'Schlaf & Erholung',preis:'21,90',ings:['Magnesium Bisglycinat','Vitamin D3+K2'],warum:'Magnesium Bisglycinat – entspannt und fördert Tiefschlaf.',tags:['Tiefschlaf','Bioverfügbar','Entspannung']},
+    {nr:2,name:'Basispaket',sub:'Regeneration & Schlaf',preis:'31,90',ings:['Magnesium Bisglycinat','Omega-3','Vitamin D3+K2','Zink'],warum:'Zink + Magnesium = ZMA-Kombi für Schlafqualität.',tags:['ZMA-Kombi','Schlafqualität','Hormon']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'42,90',empf:true,ings:['Ashwagandha KSM-66','Magnesium Bisglycinat','Omega-3','Vitamin D3+K2','Zink'],warum:'Ashwagandha senkt Cortisol nachweislich um bis zu 28%.',tags:['Cortisol ↓','KSM-66','Tiefschlaf']},
+    {nr:4,name:'Pro-Paket',sub:'Stress & Recovery',preis:'59,90',ings:['Ashwagandha KSM-66','ZMA','Magnesium Bisglycinat','Omega-3','Vitamin D3+K2','Vitamin C'],warum:'ZMA plus Ashwagandha – stärkste Regenerations-Kombination.',tags:['ZMA','Anti-Stress','Immunboost']},
+    {nr:5,name:'Elite-Paket',sub:'Complete Recovery',preis:'79,90',ings:['Ashwagandha KSM-66','ZMA','L-Glutamin','Magnesium Bisglycinat','Omega-3','Vitamin D3+K2','Vitamin C','Zink'],warum:'Das vollständige Anti-Stress- und Regenerationssystem.',tags:['8 Supps','Complete','Elite']},
+  ],
+  health:[
+    {nr:1,name:'Sparpaket',sub:'Gesundheits-Basics',preis:'16,90',ings:['Vitamin D3+K2','Omega-3'],warum:'Die 2 wichtigsten Mikronährstoffe – bei 80% unzureichend.',tags:['Herz','Immunsystem','Basis']},
+    {nr:2,name:'Basispaket',sub:'Daily Health Pack',preis:'26,90',ings:['Vitamin D3+K2','Omega-3','Magnesium','Vitamin C'],warum:'Die 4 Basics für tägliche Gesundheit.',tags:['4 Supps','Immunsystem','Antioxidans']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'36,90',empf:true,ings:['Vitamin D3+K2','Omega-3','Magnesium','Vitamin C','Zink'],warum:'Zink ist entscheidend für Immunfunktion.',tags:['5 Supps','Vollständig','Allrounder']},
+    {nr:4,name:'Pro-Paket',sub:'Vitality Pro',preis:'52,90',ings:['Multivitamin','Omega-3','Magnesium','Vitamin D3+K2','Ashwagandha KSM-66'],warum:'Multivitamin als Basis, Ashwagandha gegen Stress.',tags:['Multivitamin','Adaptogen','Anti-Stress']},
+    {nr:5,name:'Elite-Paket',sub:'Longevity Stack',preis:'74,90',ings:['Multivitamin','Omega-3','Magnesium Bisglycinat','Vitamin D3+K2','Ashwagandha KSM-66','Vitamin C','Zink'],warum:'Umfassendster Stack für Langlebigkeit.',tags:['7 Supps','Longevity','Premium']},
+  ],
+  female_balance:[
+    {nr:1,name:'Sparpaket',sub:'Female Basics',preis:'19,90',ings:['Vitamin D3+K2','Omega-3','Magnesium Bisglycinat'],warum:'Magnesium Bisglycinat hilft bei PMS und Schlaf.',tags:['PMS-Support','Schlaf','Hormonal']},
+    {nr:2,name:'Basispaket',sub:'Female Wellness',preis:'32,90',ings:['Eisen','Vitamin D3+K2','Omega-3','Magnesium Bisglycinat','Vitamin C'],warum:'Eisen ist der häufigste Mangel bei Frauen.',tags:['Eisenmangel','Energie','Frauengesundheit']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'47,90',empf:true,ings:['Eisen','Vitamin D3+K2','Omega-3','Magnesium Bisglycinat','Vitamin B12','Vitamin C'],warum:'B12 + Eisen + Vitamin C – Trifecta gegen Müdigkeit.',tags:['Anti-Müdigkeit','Energie','Female']},
+    {nr:4,name:'Pro-Paket',sub:'Female Pro Stack',preis:'62,90',ings:['Eisen','Ashwagandha KSM-66','Vitamin D3+K2','Omega-3','Magnesium Bisglycinat','Vitamin B12','Vitamin C'],warum:'Ashwagandha unterstützt die weibliche Hormonbalance.',tags:['Hormonbalance','Anti-Stress','Energie']},
+    {nr:5,name:'Elite-Paket',sub:'Complete Female Stack',preis:'82,90',ings:['Eisen','Ashwagandha KSM-66','Zink','Vitamin D3+K2','Omega-3','Magnesium Bisglycinat','Vitamin B12','Vitamin C'],warum:'Vollständiges System für Frauengesundheit.',tags:['8 Supps','Vollständig','Female Only']},
+  ],
+  vegan_health:[
+    {nr:1,name:'Sparpaket',sub:'Vegane Basics',preis:'21,90',ings:['Vitamin B12','Vitamin D3+K2','Omega-3 Algenöl'],warum:'Die 3 kritischen Nährstoffe bei veganer Ernährung.',tags:['Vegan essentiell','Algenöl','B12']},
+    {nr:2,name:'Basispaket',sub:'Vegane Gesundheit',preis:'33,90',ings:['Vitamin B12','Vitamin D3+K2','Omega-3 Algenöl','Zink','Eisen'],warum:'Zink und Eisen aus pflanzlichen Quellen schlechter verfügbar.',tags:['Mineralien','Bioverfügbar','Vegan']},
+    {nr:3,name:'Standardpaket',sub:'Empfohlen',preis:'44,90',empf:true,ings:['Vitamin B12','Vitamin D3+K2','Omega-3 Algenöl','Zink','Eisen','Magnesium Bisglycinat'],warum:'Vollständige vegane Mikronährstoff-Absicherung.',tags:['6 Supps','100% vegan','Komplett']},
+    {nr:4,name:'Pro-Paket',sub:'Vegane Vitalität',preis:'58,90',ings:['Vitamin B12','Vitamin D3+K2','Omega-3 Algenöl','Zink','Eisen','Magnesium Bisglycinat','Ashwagandha KSM-66'],warum:'Ashwagandha ist vegan und hochwirksam.',tags:['7 Supps','Adaptogen','Vegan Pro']},
+    {nr:5,name:'Elite-Paket',sub:'Complete Vegan System',preis:'74,90',ings:['Vitamin B12','Vitamin D3+K2','Omega-3 Algenöl','Zink','Eisen','Magnesium Bisglycinat','Ashwagandha KSM-66','Vitamin C','Multivitamin'],warum:'Vollständigstes veganes Supplement-System.',tags:['9 Supps','Vollständig','Vegan Elite']},
+  ],
+  starter:[
+    {nr:1,name:'Starter S',sub:'Einstieg',preis:'14,90',ings:['Vitamin D3+K2','Omega-3'],warum:'Die 2 wichtigsten Supplements für Einsteiger.',tags:['Simpel','2 Supps','Einstieg']},
+    {nr:2,name:'Starter M',sub:'Grundversorgung',preis:'24,90',ings:['Vitamin D3+K2','Omega-3','Magnesium'],warum:'Die 3 wichtigsten Mikronährstoffe.',tags:['Big 3','Grundversorgung','Jeder']},
+    {nr:3,name:'Starter L',sub:'Empfohlen',preis:'34,90',empf:true,ings:['Vitamin D3+K2','Omega-3','Magnesium','Vitamin C','Zink'],warum:'Die 5 wichtigsten Basics – perfekte Grundlage.',tags:['Top 5','Wissenschaftlich','Allround']},
+    {nr:4,name:'Starter XL',sub:'Erweiterter Start',preis:'44,90',ings:['Vitamin D3+K2','Omega-3','Magnesium','Vitamin C','Zink','Whey Protein'],warum:'Protein dazu für aktives Training.',tags:['+Protein','Sport-ready','Skalierbar']},
+    {nr:5,name:'Starter Pro',sub:'Vollständiger Einstieg',preis:'54,90',ings:['Vitamin D3+K2','Omega-3','Magnesium','Vitamin C','Zink','Whey Protein','Kreatin Monohydrat'],warum:'Alle Basics plus die 2 wirksamsten Sport-Supplements.',tags:['7 Supps','Sport & Health','Best Value']},
+  ],
+};
+function getPakete(kat) { return PAKETE[kat] || PAKETE.starter; }
+
+// ===== BMI =====
+function calcBMI(kg,cm) { return (kg/((cm/100)*(cm/100))).toFixed(1); }
+function bmiInfo(b) {
+  if(b<18.5)return{l:'Untergewicht',f:'#4a90d9'};
+  if(b<25)  return{l:'Normalgewicht',f:'#52b788'};
+  if(b<30)  return{l:'Übergewicht',f:'#f5a623'};
+  return{l:'Adipositas',f:'#f4856a'};
+}
+
+var ALT ={A:'<18',B:'18–25',C:'26–35',D:'36–45',E:'>45'};
+var TRG ={A:'Kraft 4+/Wo',B:'Kraft 2–3/Wo',C:'Cardio',D:'Mix',E:'Wenig Sport'};
+var ERN ={A:'Omnivor',B:'Flexitarisch',C:'Vegetarisch',D:'Vegan'};
+var GES ={A:'Männlich',B:'Weiblich',C:'Keine Angabe'};
+var VOR ={A:'Nichts',B:'Protein',C:'Kreatin',D:'Vitamin D',E:'Omega-3',F:'Magnesium',G:'B12',H:'Sonstiges'};
+var ZIEL={A:'Muskelaufbau',B:'Fettabbau',C:'Energie',D:'Ausdauer',E:'Regeneration',F:'Gesundheit'};
+
+// ===== DASHBOARD AUFBAUEN =====
+function zeigeDash() {
+  var a=AW, kg=parseFloat(a.gewicht)||75, cm=parseFloat(a.groesse)||175;
+  var bmi=calcBMI(kg,cm), bi=bmiInfo(parseFloat(bmi));
+  var kat=getKat(a), pakete=getPakete(kat);
+  var empf=null;
+  for(var i=0;i<pakete.length;i++){if(pakete[i].empf){empf=pakete[i];break;}}
+  if(!empf)empf=pakete[2]||pakete[0];
+  var plan=bauePlan(empf.ings,a);
+  var ziele=a.ziele||['F'], vor=a.vorhanden||['A'];
+  var bmiPct=Math.min(100,Math.max(0,((parseFloat(bmi)-15)/25)*100));
+  var vorText='';
+  if(vor.indexOf('A')<0){var vl=[];for(var i=0;i<vor.length;i++)vl.push(VOR[vor[i]]||vor[i]);vorText='Bereits vorhanden: '+vl.join(', ')+'.';}
+
+  var h='';
+  h+='<div class="profil-kopf"><div class="profil-oben"><div class="profil-ava">👤</div><div><div class="profil-titel">Dein Profil</div><div class="profil-sub">Erstellt heute · Woche 1</div></div><div class="woche-badge">Woche 1</div></div>';
+  h+='<div class="abschnitt-label">Deine Daten</div><div class="daten-raster">';
+  h+='<div class="daten-kachel"><div class="kachel-label">Körper</div><div class="kachel-wert">'+kg+' kg</div><div class="kachel-sub">'+cm+' cm</div></div>';
+  h+='<div class="daten-kachel"><div class="kachel-label">BMI</div><div class="kachel-wert" style="color:'+bi.f+'">'+bmi+'</div><div class="kachel-sub">'+bi.l+'</div><div class="bmi-leiste"><div class="bmi-fill" style="width:'+bmiPct+'%;background:'+bi.f+'"></div></div></div>';
+  h+='<div class="daten-kachel"><div class="kachel-label">Alter</div><div class="kachel-wert" style="font-size:16px">'+(ALT[a.intro]||'–')+'</div><div class="kachel-sub">'+(GES[a.geschlecht]||'–')+'</div></div>';
+  h+='<div class="daten-kachel"><div class="kachel-label">Training</div><div class="kachel-wert" style="font-size:14px">🏋️</div><div class="kachel-sub">'+(TRG[a.training]||'–')+'<br>'+(ERN[a.ernaehrung]||'–')+'</div></div>';
+  h+='</div></div>';
+  h+='<div class="karte"><div class="abschnitt-label">Deine Ziele</div><div class="ziele-zeile">';
+  for(var i=0;i<ziele.length;i++)h+='<div class="ziel-pill">'+(ZIEL[ziele[i]]||ziele[i])+'</div>';
+  h+='</div></div>';
+  if(vorText)h+='<div class="karte" style="background:rgba(82,183,136,0.07);border-color:rgba(82,183,136,0.2);"><div style="font-size:13px;color:#52b788;font-weight:500;">✓ '+vorText+'</div></div>';
+  h+='<div class="karte"><div class="abschnitt-label">Fortschritt – Woche 1</div><div class="f-zeile"><div class="f-label">🥇 Supplement-Plan</div><div class="f-pct">18%</div></div><div class="f-balken"><div class="f-fill" style="width:18%"></div></div></div>';
+  h+='<div class="karte"><div class="abschnitt-label">Einnahmeplan · '+empf.name+'</div>';
+  for(var i=0;i<plan.length;i++){
+    h+='<div class="plan-slot"><div class="plan-zeit-zeile"><div class="plan-punkt"></div><div class="plan-zeit">'+plan[i].zeit+'</div></div><div class="plan-items">';
+    for(var j=0;j<plan[i].items.length;j++)h+='<div class="plan-item"><span class="plan-name">'+plan[i].items[j].name+'</span><span class="plan-dosis">'+plan[i].items[j].dos+'</span></div>';
+    h+='</div></div>';
+  }
+  h+='</div>';
+  var zlbl=[];for(var i=0;i<ziele.length;i++)zlbl.push(ZIEL[ziele[i]]||ziele[i]);
+  h+='<div class="sektion-titel">Deine Produkte</div><div class="karte"><div class="produkt-teaser"><div class="produkt-ikon">🏋️</div><div><div class="produkt-name">'+empf.name+' ★</div><div class="produkt-preis">'+empf.preis+' € / Monat</div><span class="produkt-tag">'+zlbl.join(', ')+'</span></div><button class="btn-haupt-auto tipp" id="btn-zu-prod">Kaufen →</button></div></div>';
+  h+='<div class="karte"><div class="trust-zeile"><div class="trust">Kostenloser Versand</div><div class="trust">30 Tage Rückgabe</div><div class="trust">Qualitätsgarantie</div></div><div class="disclaimer">Keine medizinischen Diagnosen. Bei gesundheitlichen Fragen bitte einen Arzt konsultieren.</div></div>';
+  h+='<div class="abstand"></div><div style="text-align:center;"><button class="btn-ghost tipp" id="btn-alle-pakete">Alle Pakete ansehen →</button>&nbsp;<button class="btn-ghost tipp" id="btn-reset-dash">↺ Zurücksetzen</button></div>';
+
+  document.getElementById('s-dash').innerHTML = h;
+  zeige('s-dash');
+
+  // Events binden
+  var bp = document.getElementById('btn-zu-prod');
+  if(bp) bp.addEventListener('click', function(){ zeigeProd(); });
+  var ba = document.getElementById('btn-alle-pakete');
+  if(ba) ba.addEventListener('click', function(){ zeigeProd(); });
+  var br = document.getElementById('btn-reset-dash');
+  if(br) br.addEventListener('click', function(){ resetApp(); });
+}
+
+// ===== PRODUKT FLOW =====
+function zeigeProd() {
+  PA = { paket:null, qual:[], marke:null };
+  zeige('s-prod');
+  renderFlow(1);
+}
+
+function renderFlow(step) {
+  var kat=getKat(AW), pakete=getPakete(kat), h='';
+  h+='<div class="flow-nav">';
+  h+='<div class="flow-schritt'+(step===1?' aktiv':step>1?' fertig':'')+'">1 · Paket</div>';
+  h+='<div class="flow-schritt'+(step===2?' aktiv':step>2?' fertig':'')+'">2 · Qualität</div>';
+  h+='<div class="flow-schritt'+(step===3?' aktiv':step>3?' fertig':'')+'">3 · Marke</div>';
+  h+='</div>';
+
+  if(step===1){
+    h+='<div class="quiz-tag">Schritt 1 von 3</div><div class="quiz-q" style="margin-bottom:6px">Welches Paket passt zu dir?</div><div class="quiz-hint" style="margin-bottom:18px">Wähle Budget und Bedarf.</div>';
+    for(var i=0;i<pakete.length;i++){
+      var p=pakete[i], sel=PA.paket===p.nr?' gewaehlt':'';
+      h+='<div class="paket-karte tipp'+sel+'" data-nr="'+p.nr+'">';
+      if(p.empf)h+='<div class="empf-badge">★ Empfohlen</div>';
+      h+='<div class="paket-kopf"><div><div class="paket-titel">'+p.name+'</div><div class="paket-unter">'+p.sub+'</div></div><div><div class="paket-preis-val">'+p.preis+' €</div><span class="paket-preis-mo">/Monat</span></div></div>';
+      h+='<div class="zutaten">';
+      for(var j=0;j<p.ings.length;j++)h+='<span class="zutat">'+p.ings[j]+'</span>';
+      h+='</div><div class="paket-warum">'+p.warum+'</div></div>';
+    }
+    h+='<div class="flex-nav" style="margin-top:16px;"><button class="btn-ghost tipp" id="btn-back-dash">← Dashboard</button><button class="btn-haupt-auto tipp" id="btn-flow-next">Weiter →</button></div>';
+  }
+
+  if(step===2){
+    var quals=[{k:'bio',i:'🌿',l:'Bio-zertifiziert',d:'Zertifizierte Qualität'},{k:'vegan',i:'🌱',l:'Vegan',d:'Vollständig pflanzlich'},{k:'labor',i:'🔬',l:'Laborgeprüft',d:'Drittlabor-Analyse'},{k:'eu',i:'🇪🇺',l:'Made in EU',d:'Europ. Produktion'},{k:'premium',i:'⭐',l:'Premium',d:'Höchste Rohstoffgüte'},{k:'egal',i:'✓',l:'Keine Präferenz',d:'Bestes P/L-Verhältnis'}];
+    h+='<div class="quiz-tag">Schritt 2 von 3</div><div class="quiz-q" style="margin-bottom:6px">Qualitätspräferenzen</div><div class="quiz-hint" style="margin-bottom:18px">Mehrfachauswahl möglich.</div>';
+    h+='<div class="qual-raster">';
+    for(var i=0;i<quals.length;i++){
+      var q=quals[i], sel=PA.qual.indexOf(q.k)>=0?' gewaehlt':'';
+      h+='<div class="qual-kachel tipp'+sel+'" data-qk="'+q.k+'"><div class="qual-emo">'+q.i+'</div><div class="qual-lbl">'+q.l+'</div><div class="qual-desc">'+q.d+'</div></div>';
+    }
+    h+='</div><div class="flex-nav"><button class="btn-ghost tipp" id="btn-flow-back">← Zurück</button><button class="btn-haupt-auto tipp" id="btn-flow-next">Weiter →</button></div>';
+  }
+
+  if(step===3){
+    var marken=[{k:'bekannt',i:'🏆',n:'Bekannte Marken',d:'Etablierte Hersteller'},{k:'spezialist',i:'🔬',n:'Spezialisten',d:'Nischen-fokussiert'},{k:'privat',i:'🏷️',n:'Private Label',d:'Hohe Qualität, günstiger'},{k:'egal',i:'✓',n:'Egal – bestes Angebot',d:'Qualität und Preis zählen'}];
+    h+='<div class="quiz-tag">Schritt 3 von 3</div><div class="quiz-q" style="margin-bottom:6px">Markentyp-Präferenz</div><div class="quiz-hint" style="margin-bottom:18px">Welche Art von Marke bevorzugst du?</div>';
+    h+='<div class="marken-liste">';
+    for(var i=0;i<marken.length;i++){
+      var m=marken[i], sel=PA.marke===m.k?' gewaehlt':'';
+      h+='<div class="marke-kachel tipp'+sel+'" data-mk="'+m.k+'"><div class="marke-iko">'+m.i+'</div><div><div class="marke-name">'+m.n+'</div><div class="marke-desc">'+m.d+'</div></div></div>';
+    }
+    h+='</div><div class="flex-nav"><button class="btn-ghost tipp" id="btn-flow-back">← Zurück</button><button class="btn-haupt-auto tipp" id="btn-flow-next">Ergebnis →</button></div>';
+  }
+
+  if(step===4){
+    var kat2=getKat(AW), p2=getPakete(kat2), nr=PA.paket||3, gp=null;
+    for(var i=0;i<p2.length;i++){if(p2[i].nr===nr){gp=p2[i];break;}}
+    if(!gp)gp=p2[2]||p2[0];
+    var pl=bauePlan(gp.ings,AW);
+    var prods=[
+      {name:'Best Nutrition '+gp.name,marke:'Best Nutrition',preis:gp.preis,rating:'4.6 ★',tags:gp.tags,bio:false,top:true},
+      {name:'MyProtein '+gp.name,marke:'MyProtein',preis:(parseFloat(gp.preis.replace(',','.'))+5).toFixed(2).replace('.',','),rating:'4.4 ★',tags:gp.tags,bio:false,top:false},
+      {name:'Foodspring '+gp.name,marke:'Foodspring',preis:(parseFloat(gp.preis.replace(',','.'))+12).toFixed(2).replace('.',','),rating:'4.7 ★',tags:gp.tags.concat(['Laborgeprüft']),bio:true,top:false},
+    ];
+    h+='<div class="quiz-tag">Deine Empfehlungen</div><div class="quiz-q" style="margin-bottom:6px">Diese Produkte passen zu dir</div><div class="quiz-hint" style="margin-bottom:18px">Basierend auf deinem Profil & Präferenzen.</div>';
+    for(var i=0;i<prods.length;i++){
+      var p=prods[i];
+      h+='<div class="ergebnis-karte'+(p.top?' top':'')+'">'; if(p.top)h+='<div class="top-label">Top Pick</div>';
+      h+='<div class="er-name">'+p.name+'</div><div class="er-marke">'+p.marke+'</div>';
+      h+='<div class="er-meta"><div class="er-preis">'+p.preis+' €</div><div>'+p.rating+'</div></div>';
+      h+='<div class="er-tags">'; for(var j=0;j<p.tags.length;j++)h+='<span class="er-tag'+(p.bio?' bio':'')+'">'+p.tags[j]+'</span>'; h+='</div>';
+      h+='<button class="btn-shop tipp" data-pname="'+p.name+'">In den Warenkorb →</button></div>';
+    }
+    h+='<div class="sektion-titel">Einnahmeplan · '+gp.name+'</div><div class="karte">';
+    for(var i=0;i<pl.length;i++){
+      h+='<div class="plan-slot"><div class="plan-zeit-zeile"><div class="plan-punkt"></div><div class="plan-zeit">'+pl[i].zeit+'</div></div><div class="plan-items">';
+      for(var j=0;j<pl[i].items.length;j++)h+='<div class="plan-item"><span class="plan-name">'+pl[i].items[j].name+'</span><span class="plan-dosis">'+pl[i].items[j].dos+'</span></div>';
+      h+='</div></div>';
+    }
+    h+='</div><div class="karte" style="margin-top:14px;"><div class="trust-zeile"><div class="trust">Kostenloser Versand</div><div class="trust">30 Tage Rückgabe</div><div class="trust">Qualitätsgarantie</div></div></div>';
+    h+='<div class="flex-nav" style="margin-top:16px;"><button class="btn-ghost tipp" id="btn-flow-back">← Zurück</button><button class="btn-hell tipp" id="btn-back-dash2">Dashboard</button></div>';
+  }
+
+  document.getElementById('s-prod').innerHTML = h;
+  bindFlowEvents(step);
+}
+
+function bindFlowEvents(step) {
+  // Zurück zum Dashboard
+  var bd = document.getElementById('btn-back-dash');
+  if(bd) bd.addEventListener('click', function(){ zeigeDash(); });
+  var bd2 = document.getElementById('btn-back-dash2');
+  if(bd2) bd2.addEventListener('click', function(){ zeigeDash(); });
+
+  // Flow-Zurück
+  var fb = document.getElementById('btn-flow-back');
+  if(fb) fb.addEventListener('click', function(){ renderFlow(step-1); });
+
+  // Flow-Weiter
+  var fn = document.getElementById('btn-flow-next');
+  if(fn) fn.addEventListener('click', function(){
+    if(step===1){ if(!PA.paket)PA.paket=3; renderFlow(2); }
+    else if(step===2){ if(PA.qual.length===0)PA.qual=['egal']; renderFlow(3); }
+    else if(step===3){ if(!PA.marke)PA.marke='egal'; renderFlow(4); }
+  });
+
+  // Paket-Karten
+  if(step===1){
+    var pk = document.querySelectorAll('.paket-karte');
+    for(var i=0;i<pk.length;i++){
+      (function(el){
+        el.addEventListener('click', function(){
+          var alle=document.querySelectorAll('.paket-karte');
+          for(var j=0;j<alle.length;j++)alle[j].classList.remove('gewaehlt');
+          el.classList.add('gewaehlt');
+          PA.paket = parseInt(el.getAttribute('data-nr'));
+        });
+      })(pk[i]);
+    }
+  }
+
+  // Qualität
+  if(step===2){
+    var qk = document.querySelectorAll('.qual-kachel');
+    for(var i=0;i<qk.length;i++){
+      (function(el){
+        el.addEventListener('click', function(){
+          var k=el.getAttribute('data-qk');
+          if(k==='egal'){
+            var alle=document.querySelectorAll('.qual-kachel');
+            for(var j=0;j<alle.length;j++)alle[j].classList.remove('gewaehlt');
+            PA.qual=['egal']; el.classList.add('gewaehlt');
+          } else {
+            PA.qual=PA.qual.filter(function(x){return x!=='egal';});
+            var alle=document.querySelectorAll('.qual-kachel');
+            for(var j=0;j<alle.length;j++){if(alle[j].getAttribute('data-qk')==='egal')alle[j].classList.remove('gewaehlt');}
+            if(el.classList.contains('gewaehlt')){el.classList.remove('gewaehlt');PA.qual=PA.qual.filter(function(x){return x!==k;});}
+            else{el.classList.add('gewaehlt');PA.qual.push(k);}
+          }
+        });
+      })(qk[i]);
+    }
+  }
+
+  // Marken
+  if(step===3){
+    var mk = document.querySelectorAll('.marke-kachel');
+    for(var i=0;i<mk.length;i++){
+      (function(el){
+        el.addEventListener('click', function(){
+          var alle=document.querySelectorAll('.marke-kachel');
+          for(var j=0;j<alle.length;j++)alle[j].classList.remove('gewaehlt');
+          el.classList.add('gewaehlt'); PA.marke=el.getAttribute('data-mk');
+        });
+      })(mk[i]);
+    }
+  }
+
+  // Shop-Buttons
+  if(step===4){
+    var sb = document.querySelectorAll('.btn-shop');
+    for(var i=0;i<sb.length;i++){
+      (function(el){
+        el.addEventListener('click', function(){
+          toast(el.getAttribute('data-pname')+' – Shop folgt!');
+        });
+      })(sb[i]);
+    }
+  }
+}
+
+// ===== TOAST =====
+function toast(msg) {
+  var t=document.getElementById('toast-el');
+  t.textContent=msg; t.classList.add('zeigen');
+  setTimeout(function(){t.classList.remove('zeigen');},3000);
+}
+
+// ===== RESET =====
+function resetApp() {
+  AW={}; NP={name:'',email:''}; PA={paket:null,qual:[],marke:null};
+  qIdx=0; multiSel=[]; initQueue();
+  zeige('s-start'); toast('App zurückgesetzt.');
+}
+
+// ===== GLOBALE EVENT-BINDINGS =====
+document.addEventListener('DOMContentLoaded', function() {
+  initQueue();
+
+  // Start-Button
+  document.getElementById('btn-start').addEventListener('click', function() {
+    qIdx = 0; multiSel = []; initQueue();
+    zeige('s-quiz');
+    renderFrage();
+  });
+
+  // Reset-Button Header
+  document.getElementById('btn-reset').addEventListener('click', function() {
+    resetApp();
+  });
+
+  // Login speichern
+  document.getElementById('btn-login-save').addEventListener('click', function() {
+    NP.name  = document.getElementById('inp-name').value.trim()  || 'Sportler';
+    NP.email = document.getElementById('inp-email').value.trim() || '';
+    zeigeDash();
+  });
+
+  // Login überspringen
+  document.getElementById('btn-login-skip').addEventListener('click', function() {
+    NP.name = 'Sportler'; NP.email = '';
+    zeigeDash();
+  });
+});
+</script>
+</body>
+</html>
