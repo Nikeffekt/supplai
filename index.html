@@ -4,1172 +4,3130 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SupplAI – Dein Supplement-Berater</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{min-height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:#f0ede8;color:#1a1612;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 15%,rgba(245,166,35,0.09),transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(74,144,217,0.06),transparent 55%);pointer-events:none;z-index:0;}
+:root{
+  --bg:#0A0A0A;
+  --bg2:#141414;
+  --card:#1A1A1A;
+  --card2:rgba(26,26,26,0.92);
+  --text:#F5F5F0;
+  --text2:#A8A29E;
+  --text3:#6B6560;
+  --orange:#FF6B00;
+  --orange-l:#FF8C00;
+  --orange-bg:rgba(255,107,0,0.1);
+  --orange-border:rgba(255,107,0,0.3);
+  --blue:#3B82F6;
+  --blue-bg:rgba(59,130,246,0.1);
+  --green:#10B981;
+  --green-bg:rgba(16,185,129,0.1);
+  --red:#EF4444;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg:0 12px 48px rgba(0,0,0,0.6);
+  --r:14px;
+  --r-lg:20px;
+  --r-xl:26px;
+  --font-d:'Barlow Condensed','Impact',sans-serif;
+  --font-b:'DM Sans',sans-serif;
+  --font-m:'DM Mono',monospace;
+}
+html,body{min-height:100%;font-family:var(--font-b);background:var(--bg);color:var(--text);}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse at 10% 10%,rgba(255,107,0,0.05) 0%,transparent 50%),
+  radial-gradient(ellipse at 90% 90%,rgba(59,130,246,0.04) 0%,transparent 50%);
+  pointer-events:none;z-index:0;}
+button,div{-webkit-tap-highlight-color:transparent;}
+button{cursor:pointer;touch-action:manipulation;font-family:var(--font-b);}
 
-#app{max-width:480px;margin:0 auto;padding:0 18px 80px;position:relative;z-index:1;}
+/* ── LAYOUT ── */
+#app{max-width:680px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+/* Space nach sticky header */
+#app > .screen.on { padding-top: 16px; }
 
-/* HEADER */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:24px;}
-.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;}
-.logo b{background:linear-gradient(135deg,#f5a623,#e8920a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal;}
-.logo small{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;color:#a09a94;margin-top:-2px;}
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:24px;position:relative;}
+.logo{font-family:'Barlow Condensed','Impact',sans-serif;font-size:28px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--text);}
+.logo span{color:var(--orange);}
+.logo small{display:block;font-family:var(--font-b);font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-top:-3px;}
+.btn-hdr{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:100px;padding:7px 14px;font-size:11px;font-weight:600;color:var(--text2);}
+.btn-hdr:active{background:rgba(255,255,255,0.1);}
 
-button,.tipp{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;}
-
-.btn-hdr{background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.9);border-radius:100px;padding:8px 14px;font-size:12px;font-weight:600;color:#6b6560;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+/* ── SCREENS ── */
 .screen{display:none;}
-.screen.on{display:block;animation:auf 0.3s ease;}
-@keyframes auf{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.screen.on{display:block;animation:fadeUp 0.35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-.karte{background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.92);border-radius:24px;box-shadow:0 8px 36px rgba(0,0,0,0.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:26px;margin-bottom:14px;}
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow);padding:24px;margin-bottom:14px;}
+.card2{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-lg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
 
-.btn-haupt{display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;border:none;border-radius:100px;padding:15px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;box-shadow:0 6px 22px rgba(245,166,35,0.38);}
-.btn-haupt-auto{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;border:none;border-radius:100px;padding:12px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;box-shadow:0 5px 18px rgba(245,166,35,0.35);}
-.btn-hell{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.82);border:1.5px solid rgba(0,0,0,0.1);border-radius:100px;padding:12px 22px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:#6b6560;}
-.btn-ghost{background:none;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#a09a94;padding:10px 14px;border-radius:12px;}
+/* ── BUTTONS ── */
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--orange-l),var(--orange));color:#fff;border:none;border-radius:12px;padding:16px;font-family:'Barlow Condensed','Impact',sans-serif;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;box-shadow:0 6px 24px rgba(255,107,0,0.35);display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary:active{transform:scale(0.98);}
+.btn-ghost{background:none;border:none;font-size:13px;color:var(--text3);padding:10px 14px;border-radius:var(--r);}
+.btn-ghost:active{color:var(--text2);}
+.btn-outline{background:rgba(255,255,255,0.06);border:1.5px solid var(--border2);border-radius:100px;padding:11px 22px;font-size:14px;font-weight:600;color:var(--text2);}
 
-/* START */
-.start-hero{text-align:center;padding:10px 0 28px;}
-.live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:#e8920a;margin-bottom:22px;}
-.live-dot{width:6px;height:6px;border-radius:50%;background:#f5a623;animation:puls 2s infinite;}
-@keyframes puls{0%,100%{opacity:1;}50%{opacity:0.25;}}
-.start-hero h1{font-family:'Playfair Display',serif;font-size:clamp(30px,7vw,40px);font-weight:800;line-height:1.15;letter-spacing:-0.8px;margin-bottom:14px;}
-.start-hero h1 span{background:linear-gradient(135deg,#f5a623,#e8920a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.start-hero p{font-size:15px;color:#6b6560;line-height:1.7;margin-bottom:28px;}
-.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:26px;}
-.feat{background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:14px 8px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.05);}
-.feat .emo{font-size:22px;margin-bottom:6px;}
-.feat strong{display:block;font-size:12px;font-weight:700;margin-bottom:3px;}
-.feat span{font-size:10px;color:#a09a94;line-height:1.4;}
+/* ── PROGRESS ── */
+.prog-wrap{margin-bottom:22px;}
+.prog-bar{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-l));border-radius:2px;transition:width 0.4s ease;box-shadow:0 0 8px rgba(255,107,0,0.5);}
+.prog-txt{font-family:var(--font-m);font-size:11px;color:var(--text3);text-align:right;letter-spacing:0.5px;}
 
-/* QUIZ */
-.prog-wrap{margin-bottom:18px;}
-.prog-bar{height:5px;background:rgba(0,0,0,0.07);border-radius:3px;overflow:hidden;margin-bottom:6px;}
-.prog-fill{height:100%;background:linear-gradient(90deg,#f5a623,#f0c14b);border-radius:3px;transition:width 0.4s ease;}
-.prog-txt{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09a94;text-align:right;}
-.quiz-tag{display:inline-flex;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;color:#e8920a;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:14px;}
-.quiz-q{font-family:'Playfair Display',serif;font-size:clamp(18px,5vw,24px);font-weight:700;line-height:1.25;margin-bottom:8px;}
-.quiz-hint{font-size:13px;color:#a09a94;margin-bottom:22px;line-height:1.55;}
-.aw-liste{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
-.aw-liste.zwei{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.aw-btn{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.85);border-radius:14px;padding:12px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:500;color:#1a1612;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,0.04);width:100%;}
-.aw-btn.gewaehlt{background:rgba(245,166,35,0.1);border-color:#f5a623;box-shadow:0 4px 18px rgba(245,166,35,0.16);}
-.aw-key{width:28px;height:28px;border-radius:7px;flex-shrink:0;background:rgba(0,0,0,0.05);border:1.5px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:#a09a94;}
-.aw-btn.gewaehlt .aw-key{background:#f5a623;border-color:#f5a623;color:#fff;}
-.aw-haken{margin-left:auto;width:20px;height:20px;border-radius:50%;background:#f5a623;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;flex-shrink:0;}
-.aw-btn.gewaehlt .aw-haken{opacity:1;}
-.num-wrap{margin-bottom:22px;position:relative;}
-.num-inp{width:100%;background:rgba(255,255,255,0.7);border:1.5px solid rgba(255,255,255,0.9);border-radius:14px;padding:16px 56px 16px 20px;font-size:26px;font-family:'JetBrains Mono',monospace;font-weight:500;color:#1a1612;box-shadow:0 2px 10px rgba(0,0,0,0.05);-webkit-appearance:none;appearance:none;}
-.num-inp:focus{border-color:#f5a623;outline:none;background:#fff;}
-.num-einheit{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:13px;color:#a09a94;font-family:'JetBrains Mono',monospace;}
-.quiz-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:4px;}
+/* ── QUIZ ── */
+.quiz-tag{display:inline-flex;background:var(--orange-bg);border:1px solid var(--orange-border);border-radius:100px;padding:5px 14px;font-family:'Barlow Condensed','Impact',sans-serif;font-size:13px;font-weight:700;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.quiz-q{font-family:'Barlow Condensed','Impact',sans-serif;font-size:clamp(26px,5vw,36px);font-weight:800;line-height:1.1;letter-spacing:0.5px;text-transform:uppercase;color:var(--text);margin-bottom:10px;}
+.quiz-hint{font-size:13px;color:var(--text3);margin-bottom:24px;line-height:1.55;}
+.aw-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.aw-list.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.aw-btn{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.04);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;font-size:14px;font-weight:500;color:var(--text);text-align:left;width:100%;transition:all 0.15s;}
+.aw-btn:active{background:rgba(255,255,255,0.07);}
+.aw-btn.sel{background:rgba(255,107,0,0.1);border-color:var(--orange);box-shadow:0 0 0 1px rgba(255,107,0,0.2);}
+.aw-key{width:28px;height:28px;border-radius:7px;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-m);font-size:11px;color:var(--text3);transition:all 0.15s;}
+.aw-btn.sel .aw-key{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 0 10px rgba(255,107,0,0.4);}
+.aw-check{margin-left:auto;width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;flex-shrink:0;box-shadow:0 0 8px rgba(255,107,0,0.5);}
+.aw-btn.sel .aw-check{opacity:1;}
+.num-wrap{margin-bottom:24px;position:relative;}
+.num-inp{width:100%;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 56px 16px 20px;font-size:32px;font-family:var(--font-m);font-weight:500;color:var(--text);-webkit-appearance:none;}
+.num-inp:focus{border-color:var(--orange);outline:none;background:rgba(255,107,0,0.05);box-shadow:0 0 0 3px rgba(255,107,0,0.1);}
+.num-unit{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);font-family:var(--font-m);}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;padding-top:8px;}
 
-/* LOGIN */
-.login-karte{padding:32px;text-align:center;}
-.login-ava{width:64px;height:64px;border-radius:50%;margin:0 auto 18px;background:rgba(245,166,35,0.12);border:2px solid rgba(245,166,35,0.25);display:flex;align-items:center;justify-content:center;font-size:28px;}
-.login-karte h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;margin-bottom:8px;}
-.login-karte p{font-size:13px;color:#6b6560;margin-bottom:22px;line-height:1.6;}
-.feld-label{display:block;font-size:11px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#a09a94;text-align:left;margin-bottom:6px;}
-.feld-inp{width:100%;background:rgba(255,255,255,0.7);border:1.5px solid rgba(0,0,0,0.09);border-radius:12px;padding:12px 14px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:#1a1612;}
-.feld-inp:focus{border-color:#f5a623;outline:none;background:#fff;}
-.feld-gruppe{margin-bottom:13px;text-align:left;}
-.login-aktionen{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+/* ── LOGIN ── */
+.login-body{padding:36px 28px;text-align:center;}
+.login-ava{width:68px;height:68px;border-radius:50%;margin:0 auto 20px;background:var(--orange-bg);border:2px solid var(--orange-border);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 24px rgba(255,107,0,0.15);}
+.login-body h2{font-family:'Barlow Condensed','Impact',sans-serif;font-size:30px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--text);margin-bottom:8px;}
+.login-body p{font-size:13px;color:var(--text3);margin-bottom:24px;line-height:1.6;}
+.field-lbl{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);text-align:left;margin-bottom:6px;}
+.field-inp{width:100%;background:rgba(255,255,255,0.05);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:15px;font-family:var(--font-b);color:var(--text);}
+.field-inp:focus{border-color:var(--orange);outline:none;background:rgba(255,107,0,0.05);box-shadow:0 0 0 3px rgba(255,107,0,0.1);}
+.field-g{margin-bottom:13px;text-align:left;}
+.login-acts{display:flex;flex-direction:column;gap:10px;margin-top:22px;}
 
-/* ERGEBNIS */
-.ergebnis-header{text-align:center;padding:10px 0 24px;}
-.ergebnis-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(82,183,136,0.1);border:1px solid rgba(82,183,136,0.3);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:#52b788;margin-bottom:16px;}
-.ergebnis-header h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px;}
-.ergebnis-header p{font-size:14px;color:#6b6560;line-height:1.6;}
+/* ── PROFIL ── */
+.profil-card{background:#1A1A1A;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-xl);box-shadow:0 16px 48px rgba(0,0,0,0.5);overflow:hidden;margin-bottom:14px;}
+.profil-header{background:linear-gradient(135deg,#222 0%,#1a1a1a 60%,rgba(255,107,0,0.06) 100%);padding:28px 24px 24px;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,0.07);}
+.profil-header::after{content:'';position:absolute;bottom:-30px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(232,146,10,0.15);}
+.avatar-wrap{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;}
+.avatar{font-size:56px;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));}
+.avatar-info{}
+.avatar-name{font-family:var(--font-d);font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;margin-bottom:3px;}
+.avatar-sub{font-size:12px;color:rgba(255,255,255,0.6);}
+.profil-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;}
+.stat-pill-label{font-size:9px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:3px;}
+.stat-pill-val{font-size:16px;font-weight:700;color:#fff;}
+.stat-pill-sub{font-size:10px;color:rgba(255,255,255,0.5);}
+.bmi-bar-wrap{height:3px;background:rgba(255,255,255,0.15);border-radius:2px;margin-top:6px;overflow:hidden;}
+.bmi-bar-fill{height:100%;border-radius:2px;}
+.profil-body{padding:22px 24px 26px;}
+.profil-section-label{font-family:'Barlow Condensed','Impact',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+.supp-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px;}
+.supp-chip{display:flex;align-items:center;gap:5px;border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;}
+.supp-chip.essential{background:var(--orange-bg);border:1px solid var(--orange-border);color:var(--orange);}
+.supp-chip.empfohlen{background:var(--blue-bg);border:1px solid rgba(59,130,246,0.25);color:var(--blue);}
+.supp-chip.optional{background:var(--green-bg);border:1px solid rgba(16,185,129,0.25);color:var(--green);}
+.legende{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text3);}
+.leg-dot{width:7px;height:7px;border-radius:50%;}
 
-/* Profil-Zusammenfassung */
-.profil-summary{background:rgba(255,255,255,0.88);border:1px solid rgba(255,255,255,0.95);border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 6px 28px rgba(0,0,0,0.08);}
-.profil-summary-titel{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a09a94;margin-bottom:12px;}
-.profil-chips{display:flex;flex-wrap:wrap;gap:7px;}
-.profil-chip{background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);border-radius:100px;padding:5px 12px;font-size:12px;font-weight:600;color:#e8920a;}
-.profil-chip.gruen{background:rgba(82,183,136,0.08);border-color:rgba(82,183,136,0.25);color:#52b788;}
-.profil-chip.grau{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);color:#6b6560;}
+/* ── SHOP ── */
+.shop-header{margin-bottom:16px;}
 
-/* Supplement-Karte */
-.supp-karte{background:rgba(255,255,255,0.88);border:1.5px solid rgba(255,255,255,0.95);border-radius:22px;padding:22px;margin-bottom:14px;box-shadow:0 6px 28px rgba(0,0,0,0.08);position:relative;overflow:hidden;}
-.supp-karte::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f5a623,#f0c14b);}
-.supp-karte.primaer::before{background:linear-gradient(90deg,#f5a623,#e8920a);}
-.supp-karte.sekundaer::before{background:linear-gradient(90deg,#4a90d9,#6ab0f5);}
-.supp-karte.gesundheit::before{background:linear-gradient(90deg,#52b788,#7dd4a8);}
+/* 3-Spalten Grid */
+.pakete-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:0;align-items:start;}
 
-.supp-prioritaet{position:absolute;top:18px;right:18px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px;}
-.supp-prioritaet.essential{background:rgba(245,166,35,0.12);color:#e8920a;}
-.supp-prioritaet.empfohlen{background:rgba(74,144,217,0.1);color:#4a90d9;}
-.supp-prioritaet.optional{background:rgba(82,183,136,0.1);color:#52b788;}
+/* Paket-Spalte */
+.paket-spalte{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-xl);overflow:hidden;display:flex;flex-direction:column;}
+.paket-spalte.empfohlen-spalte{border-color:var(--orange);box-shadow:0 4px 24px rgba(232,146,10,0.15);}
 
-.supp-kopf{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;}
-.supp-ikon{width:48px;height:48px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.supp-ikon.orange{background:rgba(245,166,35,0.12);}
-.supp-ikon.blau{background:rgba(74,144,217,0.1);}
-.supp-ikon.gruen{background:rgba(82,183,136,0.1);}
+/* Spalten-Header */
+.spalte-header{padding:12px 10px 10px;text-align:center;position:relative;}
+.spalte-header.essential-h{background:rgba(232,146,10,0.06);border-bottom:1px solid rgba(232,146,10,0.1);}
+.spalte-header.empfohlen-h{background:rgba(232,146,10,0.09);border-bottom:1px solid rgba(232,146,10,0.2);}
+.spalte-header.complete-h{background:rgba(16,185,129,0.05);border-bottom:1px solid rgba(16,185,129,0.1);}
+.spalte-badge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:9px;font-weight:700;padding:2px 10px;border-radius:100px;white-space:nowrap;}
+.spalte-icon{font-size:18px;margin-bottom:4px;}
+.spalte-name{font-size:13px;font-weight:800;color:var(--text);margin-bottom:1px;}
+.spalte-count{font-size:10px;color:var(--text3);}
 
-.supp-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:3px;}
-.supp-warum{font-size:12px;color:#6b6560;line-height:1.5;}
+/* Produkt-Item in Spalte (kompakt) */
+.spalte-items{padding:6px;display:flex;flex-direction:column;gap:6px;}
+.prod-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.prod-item.abgewaehlt{opacity:0.4;}
+.prod-item-bar{height:2px;}
+.prod-item-bar.essential{background:linear-gradient(90deg,var(--orange-l),var(--orange));}
+.prod-item-bar.empfohlen{background:linear-gradient(90deg,#3B82F6,#60A5FA);}
+.prod-item-bar.optional{background:linear-gradient(90deg,#10B981,#34D399);}
+.prod-item-body{padding:8px 10px;}
+.prod-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;}
+.prod-item-ikon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.prod-item-info{flex:1;min-width:0;}
+.prod-item-wirkstoff{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prod-item-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:1px;}
+.prod-item-marke{font-size:10px;color:var(--text3);}
+.prod-item-toggle{width:26px;height:26px;border-radius:7px;border:none;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.prod-item-toggle.an{background:rgba(5,150,105,0.12);color:var(--green);}
+.prod-item-toggle.aus{background:rgba(0,0,0,0.05);color:var(--text3);}
+.prod-item-preis{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--orange);}
+.prod-item-einnahme{font-size:9px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-.supp-produkt{background:rgba(248,245,240,0.9);border:1px solid rgba(0,0,0,0.05);border-radius:14px;padding:14px;margin-bottom:12px;}
-.supp-produkt-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
-.supp-produkt-marke{font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#a09a94;}
-.supp-produkt-name{font-size:14px;font-weight:700;color:#1a1612;margin-bottom:2px;}
-.supp-produkt-preis{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:#e8920a;}
-.supp-produkt-rating{font-size:12px;color:#6b6560;}
-.supp-produkt-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
-.supp-produkt-tag{background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.07);border-radius:6px;padding:2px 9px;font-size:11px;color:#6b6560;}
-.supp-produkt-tag.highlight{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2);color:#e8920a;}
-.supp-fit-grund{font-size:12px;color:#52b788;background:rgba(82,183,136,0.07);border-radius:8px;padding:8px 11px;line-height:1.5;margin-bottom:10px;}
-.supp-fit-grund::before{content:'✓ ';font-weight:700;}
+/* Alternativen kompakt */
+.prod-item-alts{background:rgba(0,0,0,0.02);border-top:1px solid var(--border);padding:6px 10px;}
+.alt-toggle-btn{width:100%;background:none;border:none;font-size:10px;font-weight:600;color:var(--text3);padding:2px 0;text-align:left;display:flex;align-items:center;justify-content:space-between;}
+.alt-list{margin-top:6px;display:flex;flex-direction:column;gap:5px;}
+.alt-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 7px;background:var(--card);border-radius:8px;}
+.alt-row-name{font-size:10px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.alt-row-marke{font-size:9px;color:var(--text3);}
+.alt-row-preis{font-size:11px;font-weight:700;color:var(--orange);flex-shrink:0;}
 
-.supp-einnahme{display:flex;align-items:center;gap:8px;font-size:12px;color:#6b6560;margin-bottom:10px;}
-.supp-einnahme-zeit{background:rgba(0,0,0,0.04);border-radius:6px;padding:3px 9px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09a94;}
-.supp-einnahme-dosis{font-weight:600;color:#1a1612;}
+/* Preis-Box unter jeder Spalte */
+.spalte-preis-box{padding:10px;border-top:1px solid var(--border);margin-top:auto;}
+.spalte-preis-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);text-align:center;margin-bottom:2px;}
+.spalte-preis-val{font-family:var(--font-d);font-size:20px;font-weight:700;color:var(--orange);text-align:center;}
+.spalte-preis-mo{font-size:10px;color:var(--text3);text-align:center;}
 
-.btn-shop-klein{width:100%;background:linear-gradient(135deg,#f5a623,#e8920a);color:#fff;border:none;border-radius:100px;padding:11px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 14px rgba(245,166,35,0.28);}
+/* Kauf-Sektion unten */
+.kauf-section{background:var(--card);border:1.5px solid var(--orange-border);border-radius:var(--r-xl);padding:20px;margin-top:16px;box-shadow:0 4px 20px rgba(232,146,10,0.1);}
+.kauf-section-titel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text3);text-align:center;margin-bottom:14px;}
+.kauf-zeilen{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.kauf-zeile{display:flex;align-items:center;justify-content:space-between;}
+.kauf-zeile-label{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px;}
+.kauf-zeile-preis{font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--orange);}
+.kauf-total-zeile{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);}
+.kauf-total-label{font-size:14px;font-weight:700;color:var(--text);}
+.kauf-total-preis{font-family:var(--font-d);font-size:28px;font-weight:700;color:var(--orange);}
 
-/* Einnahmeplan */
-.plan-section{background:rgba(255,255,255,0.88);border:1px solid rgba(255,255,255,0.95);border-radius:22px;padding:22px;margin-bottom:14px;box-shadow:0 6px 28px rgba(0,0,0,0.08);}
-.plan-titel{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
-.plan-sub{font-size:12px;color:#a09a94;margin-bottom:18px;}
-.plan-slot{margin-bottom:16px;}
-.plan-slot:last-child{margin-bottom:0;}
-.plan-zeit-zeile{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
-.plan-punkt{width:8px;height:8px;border-radius:50%;background:#f5a623;flex-shrink:0;}
-.plan-zeit{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#e8920a;}
-.plan-items{display:flex;flex-direction:column;gap:5px;padding-left:17px;}
-.plan-item{background:rgba(248,245,240,0.9);border:1px solid rgba(0,0,0,0.05);border-radius:9px;padding:9px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.plan-name{font-size:13px;font-weight:600;}
-.plan-dosis{font-family:'JetBrains Mono',monospace;font-size:11px;color:#52b788;font-weight:500;background:#d8f3dc;padding:3px 8px;border-radius:5px;flex-shrink:0;}
+/* Kauf-Leiste nicht mehr fix – unten auf der Seite */
+.btn-alle-kaufen{width:100%;background:linear-gradient(135deg,var(--orange-l),var(--orange));color:#fff;border:none;border-radius:100px;padding:16px;font-size:15px;font-weight:700;box-shadow:0 6px 20px rgba(232,146,10,0.32);display:flex;align-items:center;justify-content:center;gap:8px;}
 
-/* Kosten-Übersicht */
-.kosten-box{background:linear-gradient(135deg,rgba(245,166,35,0.08),rgba(255,255,255,0.5));border:1.5px solid rgba(245,166,35,0.2);border-radius:18px;padding:20px;margin-bottom:14px;}
-.kosten-titel{font-size:11px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#a09a94;margin-bottom:14px;}
-.kosten-zeile{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;}
-.kosten-zeile:last-child{margin-bottom:0;padding-top:10px;border-top:1px solid rgba(0,0,0,0.07);}
-.kosten-label{color:#6b6560;}
-.kosten-wert{font-weight:700;color:#1a1612;}
-.kosten-gesamt{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#e8920a;}
+/* ── START ── */
+.start-hero{text-align:center;padding:16px 0 28px;}
+.start-badge{display:inline-flex;align-items:center;gap:6px;background:var(--orange-bg);border:1px solid var(--orange-border);border-radius:100px;padding:6px 16px;font-size:11px;font-weight:600;color:var(--orange);margin-bottom:20px;}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--orange-l);animation:puls 2s infinite;}
+@keyframes puls{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.start-hero h1{font-family:var(--font-d);font-size:clamp(32px,8vw,44px);font-weight:700;line-height:1.1;letter-spacing:-1px;margin-bottom:14px;}
+.start-hero h1 em{font-style:normal;color:var(--orange);}
+.start-hero p{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:28px;max-width:340px;margin-left:auto;margin-right:auto;}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;}
+.feat-tile{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 10px;text-align:center;}
+.feat-tile .ico{font-size:22px;margin-bottom:6px;}
+.feat-tile strong{display:block;font-size:12px;font-weight:700;margin-bottom:3px;}
+.feat-tile span{font-size:10px;color:var(--text3);line-height:1.4;}
 
-/* Abgezogene Supplements */
-.bereits-vorhanden{background:rgba(82,183,136,0.07);border:1px solid rgba(82,183,136,0.2);border-radius:16px;padding:16px;margin-bottom:14px;}
-.bereits-titel{font-size:11px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:#52b788;margin-bottom:10px;}
-.bereits-items{display:flex;flex-wrap:wrap;gap:6px;}
-.bereits-item{background:rgba(82,183,136,0.1);border:1px solid rgba(82,183,136,0.25);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;color:#52b788;}
-.bereits-item::before{content:'✓ ';}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text);color:#fff;border-radius:100px;padding:10px 20px;font-size:13px;font-weight:500;z-index:9999;transition:transform 0.28s ease;white-space:nowrap;}
+.toast.on{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:380px){.feat-grid{grid-template-columns:1fr;}.paket-tabs{grid-template-columns:1fr;}.aw-list.grid2{grid-template-columns:1fr;}}
+
+/* ══════════════════════════════════════
+   SPORT SHOP – Dark Athletic Design
+══════════════════════════════════════ */
+#s-shop {
+  background: transparent; /* Wrap übernimmt */
+}
+
+/* Shop Wrapper – eigener dunkler Hintergrund */
+.sport-shop {
+  background: #111111;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0 -24px;
+  padding: 0 0 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Shop Header */
+.sport-shop-header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sport-back-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.sport-shop-title {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  flex: 1;
+}
+.sport-shop-title span { color: #FF6B00; }
+
+/* Paket-Zeilen */
+.sport-pakete { padding: 0; display: flex; flex-direction: column; gap: 0; }
+
+.sport-paket {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: border-color 0.2s;
+}
+.sport-paket.essential-paket { border-color: rgba(255,107,0,0.3); }
+.sport-paket.empfohlen-paket { border-color: rgba(255,107,0,0.6); box-shadow: 0 0 24px rgba(255,107,0,0.12); }
+.sport-paket.complete-paket  { border-color: rgba(16,185,129,0.3); }
+
+/* Paket Header */
+.sport-paket-header {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.essential-paket .sport-paket-header { background: rgba(255,107,0,0.1); }
+.empfohlen-paket .sport-paket-header { background: linear-gradient(135deg, rgba(255,107,0,0.2), rgba(255,140,0,0.1)); }
+.complete-paket  .sport-paket-header { background: rgba(16,185,129,0.08); }
+
+.sport-paket-icon { font-size: 20px; flex-shrink: 0; }
+.sport-paket-info { flex: 1; min-width: 0; }
+.sport-paket-name {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.essential-paket .sport-paket-name { color: #FF6B00; }
+.empfohlen-paket .sport-paket-name { color: #FF8C00; }
+.complete-paket  .sport-paket-name { color: #10B981; }
+.sport-paket-desc { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0.3px; }
+.sport-ideal-badge {
+  background: #FF6B00;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  flex-shrink: 0;
+}
+.sport-paket-preis {
+  text-align: right;
+  flex-shrink: 0;
+}
+.sport-paket-preis-val {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #FF6B00;
+  line-height: 1;
+}
+.sport-paket-preis-mo { font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+
+/* Produkt-Liste im Paket */
+.sport-prod-list {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sport-prod-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.15s;
+}
+.sport-prod-row.abgewaehlt { opacity: 0.3; }
+.sport-prod-row:active { background: rgba(255,255,255,0.07); }
+
+.sport-prio-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sport-prio-dot.essential { background: #FF6B00; }
+.sport-prio-dot.empfohlen { background: #3B82F6; }
+.sport-prio-dot.optional  { background: #10B981; }
+
+.sport-prod-ikon { font-size: 14px; flex-shrink: 0; }
+.sport-prod-info { flex: 1; min-width: 0; }
+.sport-prod-wirkstoff {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 1px;
+}
+.sport-prod-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sport-prod-marke { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+.sport-prod-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #FF6B00;
+  flex-shrink: 0;
+}
+
+.sport-toggle {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.sport-toggle.an { background: rgba(255,107,0,0.15); color: #FF6B00; }
+.sport-toggle.aus { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); }
+
+/* Alternativen */
+.sport-alts-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 10px 2px;
+  text-align: left;
+  cursor: pointer; touch-action: manipulation;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sport-alts-list {
+  padding: 4px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sport-alt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.03);
+}
+.sport-alt-name { font-size: 11px; color: rgba(255,255,255,0.6); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sport-alt-marke { font-size: 10px; color: rgba(255,255,255,0.3); }
+.sport-alt-preis { font-size: 12px; font-weight: 700; color: rgba(255,107,0,0.7); flex-shrink: 0; }
+
+/* Paket-Trennlinie mit Extras-Label */
+.sport-extras-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 0;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.25);
+}
+.sport-extras-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+/* Kauf-Sektion */
+.sport-kauf {
+  margin: 16px 16px 0;
+  background: rgba(255,107,0,0.08);
+  border: 1px solid rgba(255,107,0,0.25);
+  border-radius: 16px;
+  padding: 16px;
+}
+.sport-kauf-titel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.sport-kauf-zeilen { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.sport-kauf-zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sport-kauf-zeile-label { font-size: 12px; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; }
+.sport-kauf-zeile-preis { font-size: 14px; font-weight: 700; color: #fff; }
+.sport-kauf-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 14px;
+}
+.sport-kauf-total-label {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+}
+.sport-kauf-total-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #FF6B00;
+  line-height: 1;
+}
+.sport-kauf-total-mo { font-size: 12px; color: rgba(255,255,255,0.4); }
+.btn-sport-kaufen {
+  width: 100%;
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 6px 24px rgba(255,107,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-sport-kaufen:active { transform: scale(0.98); }
+
+/* Disclaimer */
+.sport-disclaimer {
+  text-align: center;
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  padding: 12px 20px 0;
+  line-height: 1.5;
+}
+
+/* Prod-Block Wrapper */
+.sport-prod-block {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+}
+.sport-prod-block:last-child { border-bottom: none; }
+.sport-prod-block.abgewaehlt { opacity: 0.3; }
+
+/* Einnahme-Zeile – prominent */
+.sport-einnahme-zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 10px 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.sport-einnahme-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sport-einnahme-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: rgba(255,255,255,0.3);
+}
+.sport-einnahme-zeit {
+  font-size: 12px;
+  font-weight: 700;
+  color: #FF8C00;
+  letter-spacing: 0.2px;
+}
+.sport-einnahme-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.sport-einnahme-dosis-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: rgba(255,255,255,0.3);
+}
+.sport-einnahme-dosis {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #34D399;
+  letter-spacing: 0.2px;
+}
+
+/* Gewählte Alternative */
+.sport-alt-row {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+.sport-alt-row:active { background: rgba(255,255,255,0.06); }
+.sport-alt-row.gewaehlt-alt {
+  background: rgba(255,107,0,0.12);
+  border-radius: 8px;
+}
+
+.sport-alt-waehlen {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sport-alt-waehlen.aktiv {
+  background: rgba(255,107,0,0.2);
+  border-color: rgba(255,107,0,0.4);
+  color: #FF6B00;
+}
+
+/* Alternativen-Chips – immer sichtbar */
+.sport-alt-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 10px 8px 36px;
+}
+.sport-alt-chips-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.25);
+  flex-shrink: 0;
+}
+.sport-alt-chip {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.sport-alt-chip:active { transform: scale(0.96); }
+.sport-alt-chip.aktiv-chip {
+  background: rgba(255,107,0,0.15);
+  border-color: rgba(255,107,0,0.45);
+  color: #FF6B00;
+}
+
+/* ══════════════════════════════════════
+   SPORT START – Dark Athletic Hero
+══════════════════════════════════════ */
+.sport-start {
+  background: #111111;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0 -24px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.sport-start-hero {
+  padding: 36px 24px 28px;
+  background: linear-gradient(160deg, #1a1a1a 0%, #0f0f0f 60%, rgba(255,107,0,0.05) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.sport-start-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(255,107,0,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.sport-start-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: -30px;
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(255,140,0,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.sport-start-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255,107,0,0.8);
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.sport-start-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #FF6B00;
+  animation: puls 2s infinite;
+}
+
+.sport-start-h1 {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(52px, 14vw, 72px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+.sport-start-h1 span {
+  color: #FF6B00;
+  display: block;
+}
+
+.sport-start-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.65;
+  margin-bottom: 28px;
+  max-width: 320px;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-sport-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 28px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 8px 28px rgba(255,107,0,0.4);
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s;
+}
+.btn-sport-start:active { transform: scale(0.97); }
+.btn-start-arrow {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* Stats */
+.sport-start-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 18px 20px;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sport-stat { text-align: center; }
+.sport-stat-val {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #FF6B00;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.sport-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: rgba(255,255,255,0.3);
+}
+.sport-stat-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255,255,255,0.08);
+}
+
+/* Feature List */
+.sport-start-feats {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.sport-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sport-feat:last-child { border-bottom: none; }
+.sport-feat-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sport-feat-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.sport-feat-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.5;
+}
 
 /* Trust */
-.trust-zeile{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
-.trust{font-size:11px;font-weight:600;color:#a09a94;display:flex;align-items:center;gap:4px;}
-.trust::before{content:'✓';color:#52b788;font-weight:700;}
-.disclaimer{text-align:center;font-size:11px;color:#a09a94;line-height:1.5;padding:10px 0;}
+.sport-start-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-wrap: wrap;
+}
+.sport-start-trust span {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.3px;
+}
 
-.sektion-titel{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a09a94;margin-bottom:11px;margin-top:20px;}
-.abstand{height:14px;}
-.flex-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+/* ══════════════════════════════════════
+   FANCY UPGRADES – Glow, Gradients, Glass
+══════════════════════════════════════ */
 
-.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.9);border-radius:100px;padding:11px 22px;font-size:13px;font-weight:600;color:#1a1612;box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:9999;transition:transform 0.3s ease;white-space:nowrap;}
-.toast.zeigen{transform:translateX(-50%) translateY(0);}
+/* Globaler Glow hinter der App */
+body::after {
+  content: '';
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,107,0,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
 
-@media(max-width:420px){.feat-grid{grid-template-columns:1fr;}.aw-liste.zwei{grid-template-columns:1fr;}}
+/* Header fancy */
+.hdr {
+  background: rgba(10,10,10,0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin: 0 -24px;
+  padding: 18px 24px 16px;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255,107,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin-bottom: 0;
+}
+.logo {
+  background: linear-gradient(135deg, #fff 30%, #FF8C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo span {
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fancy Paket-Karte im 3-Spalten Layout */
+.sport-paket {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.sport-paket::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.essential-paket::before {
+  background: linear-gradient(135deg, rgba(255,107,0,0.4), transparent 60%);
+  opacity: 1;
+}
+.empfohlen-paket::before {
+  background: linear-gradient(135deg, #FF6B00, #FF8C00, rgba(255,107,0,0.2));
+  opacity: 1;
+}
+.complete-paket::before {
+  background: linear-gradient(135deg, rgba(16,185,129,0.4), transparent 60%);
+  opacity: 1;
+}
+
+/* Empfohlen: hervorgehoben */
+.empfohlen-paket {
+  transform: none;
+  box-shadow: 0 0 40px rgba(255,107,0,0.2), 0 0 80px rgba(255,107,0,0.08);
+}
+
+/* Paket-Header fancy */
+.sport-paket-header {
+  position: relative;
+  overflow: hidden;
+}
+.sport-paket-header::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+}
+
+/* Paket-Name fancy */
+.sport-paket-name {
+  font-size: clamp(14px, 2vw, 20px);
+  letter-spacing: 2px;
+}
+
+/* Produkt-Block im 3-Spalten Layout kompakter */
+.sport-prod-list {
+  padding: 6px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.sport-prod-row {
+  padding: 7px 8px;
+  border-radius: 9px;
+}
+.sport-prod-name {
+  font-size: 11px;
+}
+.sport-prod-marke {
+  font-size: 9px;
+}
+.sport-prod-preis {
+  font-size: 13px;
+}
+.sport-toggle {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+/* Einnahme-Zeile kompakter für 3-Spalten */
+.sport-einnahme-zeile {
+  margin: 0 8px 5px 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.sport-einnahme-zeit {
+  font-size: 10px;
+}
+.sport-einnahme-dosis {
+  font-size: 10px;
+}
+.sport-einnahme-label,
+.sport-einnahme-dosis-label {
+  font-size: 8px;
+}
+
+/* Alt-Chips kompakter */
+.sport-alt-chips {
+  padding: 0 8px 6px 8px;
+  gap: 4px;
+}
+.sport-alt-chip {
+  padding: 2px 8px;
+  font-size: 9px;
+}
+.sport-alt-chips-label {
+  font-size: 8px;
+}
+
+/* Paket-Preis kompakter */
+.sport-paket-preis-val {
+  font-size: 18px;
+}
+
+/* Fancy Kauf-Sektion */
+.sport-kauf {
+  margin: 16px 16px 0;
+  background: linear-gradient(135deg, rgba(255,107,0,0.08), rgba(255,140,0,0.04));
+  border: 1px solid rgba(255,107,0,0.3);
+  border-radius: 16px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.sport-kauf::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,107,0,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.sport-kauf-total-preis {
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.btn-sport-kaufen {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 50%, #FFB347 100%);
+  box-shadow: 0 8px 32px rgba(255,107,0,0.45), 0 0 0 1px rgba(255,255,255,0.1) inset;
+  letter-spacing: 2px;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-sport-kaufen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: shimmer 3s infinite;
+}
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Fancy Quiz */
+.quiz-q {
+  background: linear-gradient(135deg, #fff 40%, rgba(255,107,0,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.aw-btn.sel {
+  box-shadow: 0 0 0 1px rgba(255,107,0,0.4), 0 4px 16px rgba(255,107,0,0.15);
+}
+
+/* Fancy Profil-Header Gradient */
+.profil-header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #222 50%, rgba(255,107,0,0.08) 100%) !important;
+}
+.avatar {
+  filter: drop-shadow(0 0 16px rgba(255,107,0,0.3));
+}
+
+/* Start Hero fancy */
+.sport-start-h1 span {
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.btn-sport-start {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 60%, #FFB347 100%);
+  box-shadow: 0 8px 32px rgba(255,107,0,0.45), 0 0 0 1px rgba(255,255,255,0.1) inset;
+}
+
+/* Toast fancy */
+.toast {
+  background: linear-gradient(135deg, #1a1a1a, #222);
+  border: 1px solid rgba(255,107,0,0.3);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,0,0.1);
+}
+
+/* Progressbar glow */
+.prog-fill {
+  box-shadow: 0 0 12px rgba(255,107,0,0.6), 0 0 4px rgba(255,107,0,0.4);
+}
+
+/* Login Card fancy */
+.login-ava {
+  box-shadow: 0 0 32px rgba(255,107,0,0.25) !important;
+}
+
+/* 3-Spalten responsive */
+@media(max-width:600px) {
+  .sport-pakete { grid-template-columns: 1fr; gap: 10px; }
+  .sport-paket-name { font-size: 16px; }
+}
+@media(min-width:601px) and (max-width:800px) {
+  .sport-pakete { grid-template-columns: 1fr 1fr 1fr; }
+  .sport-prod-name { font-size: 10px; }
+  .sport-prod-marke { font-size: 9px; }
+}
+
+
+/* ══════════════════════════════════════
+   SHOP v3 – Tab + Produkt-Karten
+══════════════════════════════════════ */
+
+.shop-wrap {
+  min-height: 100vh;
+  background: #0A0A0A;
+  margin: 0 -24px;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+}
+
+/* Shop Navigation */
+.shop-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,107,0,0.12);
+}
+.shop-nav-back {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.shop-nav-title {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #fff 30%, #FF8C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.shop-nav-title span {
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.shop-nav-count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Paket Tabs */
+.shop-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  background: #111;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 57px;
+  z-index: 90;
+}
+.shop-tab {
+  padding: 12px 8px 10px;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  transition: background 0.2s;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.shop-tab:last-child { border-right: none; }
+.shop-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+.shop-tab-aktiv {
+  background: rgba(255,107,0,0.06);
+}
+.shop-tab-aktiv::after {
+  background: linear-gradient(90deg, #FF6B00, #FFB347);
+}
+.shop-tab-badge {
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.shop-tab-label {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1px;
+  transition: color 0.2s;
+}
+.shop-tab-aktiv .shop-tab-label { color: #fff; }
+.shop-tab-sub {
+  font-size: 9px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+}
+.shop-tab-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+/* Gruppe Label */
+.shop-gruppe-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  padding: 16px 20px 8px;
+}
+
+/* Produkt-Liste */
+.shop-prod-liste {
+  padding: 0 12px;
+}
+
+/* ── PRODUKT KARTE ── */
+.pk-karte {
+  display: flex;
+  background: #161616;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.pk-karte:active { transform: scale(0.99); }
+.pk-karte.pk-aus {
+  opacity: 0.35;
+}
+
+/* Linker Prioritäts-Streifen */
+.pk-streifen {
+  width: 3px;
+  flex-shrink: 0;
+}
+
+/* Haupt-Bereich */
+.pk-main {
+  flex: 1;
+  padding: 13px 14px;
+  min-width: 0;
+}
+
+/* Zeile 1: Ikon + Info + Preis + Toggle */
+.pk-zeile1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.pk-ikon {
+  font-size: 22px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.pk-kopf { flex: 1; min-width: 0; }
+.pk-wirkstoff {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pk-alt-badge {
+  background: rgba(255,107,0,0.2);
+  color: #FF8C00;
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.pk-prodname {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pk-marke {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+.pk-rechts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.pk-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #FF6B00;
+  line-height: 1;
+}
+.pk-preis-eur {
+  font-size: 14px;
+  opacity: 0.7;
+}
+.pk-rating {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+}
+.pk-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  margin-top: 2px;
+}
+.pk-toggle.an {
+  background: rgba(255,107,0,0.15);
+  color: #FF6B00;
+  box-shadow: 0 0 10px rgba(255,107,0,0.2);
+}
+.pk-toggle.aus {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Einnahme-Bar */
+.pk-einnahme-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin: 10px 0 8px;
+  gap: 6px;
+}
+.pk-einnahme-slot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+.pk-einnahme-icon { font-size: 12px; }
+.pk-einnahme-text {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+}
+.pk-dosis-text {
+  font-family: 'DM Mono', monospace;
+  color: #34D399;
+  font-weight: 600;
+}
+.pk-einnahme-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+/* Alternativen Chips */
+.pk-alts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.pk-alts-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+.pk-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+  padding: 4px 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+.pk-chip:active { transform: scale(0.96); }
+.pk-chip-aktiv {
+  background: rgba(255,107,0,0.12);
+  border-color: rgba(255,107,0,0.4);
+}
+.pk-chip-marke {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  font-family: var(--font-b);
+}
+.pk-chip-aktiv .pk-chip-marke { color: #FF8C00; }
+.pk-chip-preis {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.25);
+  font-family: var(--font-m);
+}
+.pk-chip-aktiv .pk-chip-preis { color: rgba(255,140,0,0.7); }
+
+/* ── KAUF LEISTE FIXED ── */
+.shop-kauf-leiste {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255,107,0,0.2);
+  padding: 14px 24px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 200;
+  max-width: 680px;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.shop-kauf-info { flex: 1; }
+.shop-kauf-count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+.shop-kauf-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.shop-kauf-btn {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 60%, #FFB347 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 24px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 6px 24px rgba(255,107,0,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.shop-kauf-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 2.5s infinite;
+}
+.shop-kauf-btn:active { transform: scale(0.97); }
+.shop-kauf-arrow {
+  font-size: 20px;
+  line-height: 1;
+}
+
+
+/* ══════════════════════════════════════
+   PROFIL – Wirkstoff-Zeilen + Pop-up
+══════════════════════════════════════ */
+
+/* Gruppe Label */
+.pw-gruppe-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 16px 0 8px;
+}
+.pw-gruppe-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Wirkstoff-Zeile */
+.pw-zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, transform 0.1s;
+}
+.pw-zeile:active {
+  background: rgba(255,255,255,0.06);
+  transform: scale(0.99);
+}
+.pw-zeile-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.pw-zeile-ikon {
+  width: 40px; height: 40px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.pw-zeile-info { flex: 1; min-width: 0; }
+.pw-zeile-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.pw-zeile-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pw-zeile-pfeil {
+  font-size: 22px;
+  font-weight: 300;
+  opacity: 0.6;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* ── POP-UP ── */
+.pw-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.pw-popup {
+  width: 100%;
+  max-width: 680px;
+  background: #161616;
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  max-height: 88vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+  -webkit-overflow-scrolling: touch;
+}
+.pw-popup::-webkit-scrollbar { display: none; }
+.pw-popup.pw-popup-open {
+  transform: translateY(0);
+}
+
+/* Popup Handle */
+.pw-popup::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+
+/* Popup Header */
+.pw-popup-header {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.pw-popup-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.pw-popup-ikon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.pw-popup-name {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.pw-popup-prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+.pw-popup-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.pw-popup-erkl {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.pw-popup-einnahme {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 12px 16px;
+  gap: 12px;
+}
+.pw-einnahme-block { flex: 1; }
+.pw-einnahme-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 4px;
+}
+.pw-einnahme-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+.pw-einnahme-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+/* Popup Produkte */
+.pw-popup-produkte-titel {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  padding: 14px 20px 8px;
+}
+.pw-popup-produkte {
+  padding: 0 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pw-prod-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.pw-prod-card.pw-prod-best {
+  border-color: rgba(255,107,0,0.35);
+  background: rgba(255,107,0,0.05);
+}
+.pw-prod-best-badge {
+  position: absolute;
+  top: 10px; right: 12px;
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+.pw-prod-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pw-prod-marke {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 3px;
+}
+.pw-prod-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+  padding-right: 70px;
+}
+.pw-prod-rating {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+.pw-prod-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #FF6B00;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.pw-prod-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.pw-prod-tag {
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+}
+.pw-prod-kaufen {
+  width: 100%;
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(255,107,0,0.3);
+}
+.pw-prod-kaufen:active { transform: scale(0.98); }
+
+
+/* ── STACK-ZEILE UPDATES ── */
+.pw-zeile { position: relative; }
+.pw-zeile-rechts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.pw-zeile-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.pw-zeile-gewaehlt {
+  background: rgba(255,255,255,0.04);
+}
+.pw-stack-check {
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pw-zeile-stack-prod {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+}
+.pw-stack-prodname {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Progress Balken */
+.profil-progress-wrap {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.profil-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.profil-progress-label {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.profil-progress-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #FF6B00;
+}
+.profil-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.profil-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF6B00, #FFB347);
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(255,107,0,0.5);
+}
+.profil-progress-preis {
+  font-size: 12px;
+  font-weight: 700;
+  color: #FF6B00;
+}
+.profil-progress-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+}
+
+/* Stack Kaufen Box */
+.pw-stack-kauf-box {
+  background: linear-gradient(135deg, rgba(255,107,0,0.1), rgba(255,140,0,0.05));
+  border: 1px solid rgba(255,107,0,0.3);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.pw-stack-kauf-info { flex: 1; }
+.pw-stack-kauf-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 3px;
+}
+.pw-stack-kauf-preis {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.pw-stack-kauf-btn {
+  width: auto !important;
+  padding: 12px 20px !important;
+  font-size: 14px !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Im-Stack Button im Popup */
+.pw-prod-im-stack {
+  background: rgba(255,107,0,0.15) !important;
+  border: 1px solid rgba(255,107,0,0.4) !important;
+  box-shadow: none !important;
+  color: #FF8C00 !important;
+}
+
 </style>
 </head>
 <body>
 <div id="app">
 
   <header class="hdr">
-    <div class="logo">Suppl<b>AI</b><small>Personalisierter Supplement-Berater</small></div>
-    <button class="btn-hdr" id="btn-reset">↺ Neu</button>
+    <button class="btn-hdr" id="btn-reset" style="opacity:0;pointer-events:none;min-width:60px;">↺</button>
+    <div class="logo" style="text-align:center;">Suppl<span>AI</span><small>Supplement-Berater</small></div>
+    <button class="btn-hdr" id="btn-reset2">↺ Neu</button>
   </header>
 
+  <!-- START -->
   <div id="s-start" class="screen on">
-    <div class="start-hero">
-      <div class="live-badge"><div class="live-dot"></div>KI-gestützt · Evidenzbasiert · Personalisiert</div>
-      <h1>Dein Plan.<br><span>Exakt für dich.</span></h1>
-      <p>Beantworte 10 Fragen – und erhalte eine präzise Supplement-Zusammenstellung, die exakt auf dein Profil, deine Ziele und dein Budget abgestimmt ist.</p>
-      <button class="btn-haupt" id="btn-start">Jetzt starten →</button>
-    </div>
-    <div class="feat-grid">
-      <div class="feat"><div class="emo">🎯</div><strong>Genau passend</strong><span>Nur was du wirklich brauchst</span></div>
-      <div class="feat"><div class="emo">🧬</div><strong>Dosierung</strong><span>Nach kg, Alter & Ziel</span></div>
-      <div class="feat"><div class="emo">💰</div><strong>Budget</strong><span>Echte Produkte & Preise</span></div>
-    </div>
-    <div class="karte" style="text-align:center;">
-      <div style="font-size:11px;color:#a09a94;line-height:1.6;">✓ Keine med. Diagnosen &nbsp;·&nbsp; ✓ EU-konform &nbsp;·&nbsp; ✓ Evidenzbasiert<br>Bereits eingenommene Supplements werden berücksichtigt.</div>
+    <div class="sport-start">
+
+      <!-- Hero Block -->
+      <div class="sport-start-hero">
+        <div class="sport-start-eyebrow">
+          <span class="sport-start-dot"></span>
+          PERSONALISIERT · EVIDENZBASIERT
+        </div>
+        <h1 class="sport-start-h1">DEIN<br><span>STACK.</span></h1>
+        <p class="sport-start-sub">12 Fragen. Deine exakte Supplement-Zusammenstellung – mit Dosierungen, Einnahmezeiten und Alternativen.</p>
+        <button class="btn-sport-start" id="btn-start">
+          <span>Quiz starten</span>
+          <span class="btn-start-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- Stats Zeile -->
+      <div class="sport-start-stats">
+        <div class="sport-stat">
+          <div class="sport-stat-val">12</div>
+          <div class="sport-stat-label">Fragen</div>
+        </div>
+        <div class="sport-stat-divider"></div>
+        <div class="sport-stat">
+          <div class="sport-stat-val">21</div>
+          <div class="sport-stat-label">Supplements</div>
+        </div>
+        <div class="sport-stat-divider"></div>
+        <div class="sport-stat">
+          <div class="sport-stat-val">3</div>
+          <div class="sport-stat-label">Alternativen</div>
+        </div>
+        <div class="sport-stat-divider"></div>
+        <div class="sport-stat">
+          <div class="sport-stat-val">100%</div>
+          <div class="sport-stat-label">Personalisiert</div>
+        </div>
+      </div>
+
+      <!-- Feature Tiles -->
+      <div class="sport-start-feats">
+        <div class="sport-feat">
+          <div class="sport-feat-icon">🎯</div>
+          <div class="sport-feat-body">
+            <div class="sport-feat-title">Präzise Empfehlung</div>
+            <div class="sport-feat-desc">Nur was dein Profil wirklich braucht – kein unnötiger Overhead</div>
+          </div>
+        </div>
+        <div class="sport-feat">
+          <div class="sport-feat-icon">⏱</div>
+          <div class="sport-feat-body">
+            <div class="sport-feat-title">Einnahmeplan</div>
+            <div class="sport-feat-desc">Wann und wie viel – exakt berechnet nach deinem Körpergewicht</div>
+          </div>
+        </div>
+        <div class="sport-feat">
+          <div class="sport-feat-icon">🔄</div>
+          <div class="sport-feat-body">
+            <div class="sport-feat-title">Alternativen</div>
+            <div class="sport-feat-desc">2–3 Produkte pro Supplement – du entscheidest welche Marke</div>
+          </div>
+        </div>
+        <div class="sport-feat">
+          <div class="sport-feat-icon">🛡️</div>
+          <div class="sport-feat-body">
+            <div class="sport-feat-title">Medizinische Checks</div>
+            <div class="sport-feat-desc">Wechselwirkungen und Ausschlüsse werden automatisch geprüft</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust -->
+      <div class="sport-start-trust">
+        <span>✓ Keine med. Diagnosen</span>
+        <span>✓ EU-konform</span>
+        <span>✓ DSGVO-sicher</span>
+      </div>
+
     </div>
   </div>
 
+  <!-- QUIZ -->
   <div id="s-quiz" class="screen">
     <div class="prog-wrap">
-      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-      <div class="prog-txt" id="prog-txt">0 / 10</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+      <div class="prog-txt" id="prog-txt">0 / 12</div>
     </div>
-    <div class="karte" id="quiz-box" style="padding:28px;"></div>
+    <div id="quiz-box" style="background:#1A1A1A;border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:28px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.4);"></div>
   </div>
 
+  <!-- LOGIN -->
   <div id="s-login" class="screen">
-    <div class="karte login-karte">
+    <div style="background:#1A1A1A;border:1px solid rgba(255,255,255,0.07);border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,0.4);" class="login-body">
       <div class="login-ava">👋</div>
       <h2>Fast fertig!</h2>
-      <p>Deine persönliche Supplement-Analyse wird jetzt erstellt. Speichere dein Profil oder überspringe diesen Schritt.</p>
-      <div class="feld-gruppe"><label class="feld-label">Dein Name</label><input type="text" class="feld-inp" id="inp-name" placeholder="Max Mustermann"></div>
-      <div class="feld-gruppe"><label class="feld-label">E-Mail</label><input type="email" class="feld-inp" id="inp-email" placeholder="max@beispiel.at"></div>
-      <div class="login-aktionen">
-        <button class="btn-haupt" id="btn-login-save">Analyse starten →</button>
-        <button class="btn-ghost" id="btn-login-skip" style="text-align:center;">Überspringen</button>
+      <p>Speichere dein Profil oder überspringe diesen Schritt.</p>
+      <div class="field-g"><label class="field-lbl">Name</label><input type="text" class="field-inp" id="inp-name" placeholder="Max Mustermann"></div>
+      <div class="field-g"><label class="field-lbl">E-Mail</label><input type="email" class="field-inp" id="inp-email" placeholder="max@beispiel.at"></div>
+      <div class="login-acts">
+        <button class="btn-primary" id="btn-login">Profil speichern →</button>
+        <button class="btn-ghost" id="btn-skip" style="text-align:center;">Überspringen</button>
       </div>
     </div>
   </div>
 
-  <div id="s-ergebnis" class="screen"></div>
+  <!-- PROFIL -->
+  <div id="s-profil" class="screen"></div>
 
-</div>
-<div class="toast" id="toast-el"></div>
+  <!-- SHOP -->
+  <div id="s-shop" class="screen"></div>
+
+</div><!-- /app -->
+
+<!-- Kauf-Sektion ist jetzt unten auf der Seite -->
+
+<div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
-// SUPPLAI v5 – Personalisierte Supplement-Engine
-// Produktdatenbank aus Excel-Analyse
+// SUPPLAI v6
 // ============================================================
 
-var AW = {};
-var NP = { name: '', email: '' };
-var qIdx = 0;
-var multiSel = [];
-var fQueue = [];
+var AW = {}, NP = { name:'', email:'' };
+var qIdx = 0, multiSel = [], fQueue = [];
+var abgewaehlt = {};
+var aufgeklappteAlts = {};
+var gewaehlteAlts = {};
+var aktivTab = 'essential';
+var meinStack = {}; // {suppId: {prod: {...}, preis: '...'}} – gewählte Stack-Produkte // essential | empfohlen | complete
 
-// ===== PRODUKTDATENBANK (aus Excel-Analyse) =====
-var PRODUKTE = {
-
-  // WHEY PROTEIN
-  'whey_protein': {
-    budget:    { marke:'Myprotein', name:'Impact Whey Protein', preis:'24,99', rating:'4.6 ★', reviews:'150.000+', tags:['21g Protein','Günstigster Einstieg','60+ Sorten'], position:'Global #1 Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Preis-Leistung, riesige Sortenauswahl' },
-    standard:  { marke:'BioTechUSA', name:'Whey Zero', preis:'34,90', rating:'4.7 ★', reviews:'25.000+', tags:['25g Protein','Isolat','Laktosefrei'], position:'Review-König EU', zielgruppe:'Fitness Allrounder', kaufmotiv:'Hoher Proteingehalt, viele Reviews' },
-    premium:   { marke:'ESN', name:'Designer Whey', preis:'34,90', rating:'4.8 ★', reviews:'8.000+', tags:['24g Protein','Beste Geschmacksbewertung DACH','Informed Sport'], position:'DACH #1 Geschmack', zielgruppe:'Gym-Enthusiasten', kaufmotiv:'Geschmack + Markenvertrauen' },
-  },
-
-  // ISO CLEAR (für wer Wassergeschmack will)
-  'iso_clear': {
-    budget:    { marke:'Myprotein', name:'Clear Whey Isolate', preis:'31,99', rating:'4.5 ★', reviews:'12.000+', tags:['Wasserklarer Drink','20g Protein','Fruchtgeschmack'], position:'Global #1 Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Preis-Leistung' },
-    standard:  { marke:'BioTechUSA', name:'Iso Whey Zero Clear', preis:'30,90', rating:'4.8 ★', reviews:'42.000+', tags:['86g Protein/100g','Laktosefrei','42.000 Reviews'], position:'Review-König EU', zielgruppe:'Fitness Allrounder', kaufmotiv:'Sicherheit + viele Reviews' },
-    premium:   { marke:'ESN', name:'IsoClear Whey Isolate', preis:'54,90', rating:'4.6 ★', reviews:'7.400+', tags:['83g Protein/100g','Clean Label','DACH-Favorit'], position:'DACH #1 Premium', zielgruppe:'Gym-Enthusiasten, Influencer-Follower', kaufmotiv:'Status & Qualität' },
-  },
-
-  // PFLANZENPROTEIN (vegan)
-  'pflanzenprotein': {
-    budget:    { marke:'Myprotein', name:'THE Plant Protein', preis:'24,99', rating:'4.4 ★', reviews:'8.000+', tags:['Erbse+Reis','21g Protein','Preisgünstig'], position:'Global Volumen', zielgruppe:'Einsteiger Veganer', kaufmotiv:'Günstiger Einstieg' },
-    standard:  { marke:'BioTechUSA', name:'Vegan Protein', preis:'28,90', rating:'4.5 ★', reviews:'5.000+', tags:['Pflanzlich','25g Protein','EU-Produktion'], position:'EU Mainstream', zielgruppe:'Veganer Fitness Allrounder', kaufmotiv:'Sicherheit + EU-Vertrauen' },
-    premium:   { marke:'ESN', name:'Vegan Designer Protein', preis:'34,90', rating:'4.6 ★', reviews:'3.000+', tags:['Vollständiges Aminoprofil','Clean Label','DACH Premium'], position:'DACH Premium Vegan', zielgruppe:'Premium Veganer', kaufmotiv:'Qualität + Markenvertrauen' },
-  },
-
-  // KREATIN
-  'kreatin': {
-    budget:    { marke:'Myprotein', name:'Creatine Monohydrate', preis:'18,99', rating:'4.7 ★', reviews:'13.000+', tags:['5g/Portion','≥99,5% Reinheit','Informed Sport'], position:'Global #1 Preis-Leistung', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Bestes Preis-Leistungs-Verhältnis' },
-    standard:  { marke:'BioTechUSA', name:'Creatine Monohydrate', preis:'14,90', rating:'4.6 ★', reviews:'8.000+', tags:['≥99,5% Reinheit','EU-Produktion','Informed Sport'], position:'Review-König EU', zielgruppe:'Fitness Allrounder', kaufmotiv:'Bewährt, günstig, EU-Vertrauen' },
-    premium:   { marke:'ESN', name:'Creatine Monohydrate (Creapure®)', preis:'29,90', rating:'4.8 ★', reviews:'1.500+', tags:['Creapure® zertifiziert','≥99,9% Reinheit','DACH #1'], position:'DACH #1 Premium', zielgruppe:'Gym-Enthusiasten, Qualitätsbewusste', kaufmotiv:'Höchste Reinheit, Creapure-Standard' },
-  },
-
-  // MAGNESIUM
-  'magnesium': {
-    budget:    { marke:'Myprotein', name:'Magnesium Bisglycinate', preis:'12,99', rating:'4.5 ★', reviews:'8.000+', tags:['375mg/Portion','Bisglycinat','Günstigster Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Günstiger Preis, solide Qualität' },
-    standard:  { marke:'ESN', name:'Magnesium Bisglycinat', preis:'19,90', rating:'4.7 ★', reviews:'1.200+', tags:['300mg elementares Mg','Bisglycinat','Informed Sport'], position:'DACH Premium', zielgruppe:'Athleten, Gym-Enthusiasten', kaufmotiv:'Beste Aufnahme, Markenvertrauen' },
-    premium:   { marke:'Norsan', name:'Magnesium Bisglycinat', preis:'24,90', rating:'4.7 ★', reviews:'2.500+', tags:['Albion Chelat','Maximale Bioverfügbarkeit','Informed Sport'], position:'Premium DACH Gesundheit', zielgruppe:'Biohacker, Gesundheitsbewusste', kaufmotiv:'Albion Chelat, maximale Aufnahme' },
-  },
-
-  // OMEGA-3
-  'omega3': {
-    budget:    { marke:'Myprotein', name:'Omega-3', preis:'12,99', rating:'4.5 ★', reviews:'20.000+', tags:['270mg EPA','180mg DHA','Günstigster Einstieg'], position:'Global #1 Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Günstigster Omega-3 Einstieg' },
-    standard:  { marke:'ESN', name:'Omega-3', preis:'19,90', rating:'4.6 ★', reviews:'2.000+', tags:['360mg EPA','240mg DHA','Informed Sport'], position:'DACH Gym-Markt', zielgruppe:'Athleten, Gym-Enthusiasten', kaufmotiv:'Markenvertrauen, guter Preis' },
-    premium:   { marke:'Norsan', name:'Omega-3 Total (flüssig)', preis:'29,90', rating:'4.8 ★', reviews:'8.000+', tags:['1050mg EPA','750mg DHA','IFOS 5-Sterne','TG-Form'], position:'Premium Flüssig DACH #1', zielgruppe:'Biohacker, Gesundheitsbewusste', kaufmotiv:'Höchster EPA/DHA-Gehalt, flüssige Form' },
-  },
-
-  // OMEGA-3 ALGENÖL (vegan)
-  'omega3_vegan': {
-    budget:    { marke:'Myprotein', name:'Vegan Omega-3', preis:'16,99', rating:'4.4 ★', reviews:'3.000+', tags:['Algenöl','EPA+DHA','100% vegan'], position:'Global Volumen', zielgruppe:'Veganer Einsteiger', kaufmotiv:'Günstiger veganer Einstieg' },
-    standard:  { marke:'BioTechUSA', name:'Vegan Omega-3', preis:'14,90', rating:'4.5 ★', reviews:'2.000+', tags:['Algenöl','Vegan zertifiziert','EU-Produktion'], position:'EU Mainstream Vegan', zielgruppe:'Veganer Fitness Allrounder', kaufmotiv:'EU-Vertrauen, günstiger Preis' },
-    premium:   { marke:'Norsan', name:'Norsan Vegan Omega-3', preis:'34,90', rating:'4.8 ★', reviews:'4.000+', tags:['IFOS 5-Sterne','Algenöl Premium','TG-Form'], position:'Premium Vegan Omega-3', zielgruppe:'Biohacker, Premium Veganer', kaufmotiv:'Höchste Qualität, IFOS 5-Sterne' },
-  },
-
-  // VITAMIN D3+K2
-  'vitamin_d3': {
-    budget:    { marke:'Myprotein', name:'Vitamin D3 + K2', preis:'9,99', rating:'4.5 ★', reviews:'15.000+', tags:['1000 IE D3','45µg K2','Günstigster Einstieg'], position:'Global #1 Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Günstigste Einstiegsoption' },
-    standard:  { marke:'ESN', name:'Vitamin D3 + K2', preis:'19,90', rating:'4.7 ★', reviews:'2.000+', tags:['2000 IE D3','80µg K2 MK-7 all-trans','Depot-Effekt'], position:'DACH #1 Gym-Markt', zielgruppe:'Athleten, Gym-Enthusiasten', kaufmotiv:'MK-7 all-trans, Markenvertrauen' },
-    premium:   { marke:'Norsan', name:'Vitamin D3 + K2 Drops', preis:'22,90', rating:'4.7 ★', reviews:'3.000+', tags:['Flüssig','MCT-Öl Träger','MK-7 all-trans','Max. Aufnahme'], position:'Premium DACH Gesundheit', zielgruppe:'Biohacker, Premium Käufer', kaufmotiv:'Flüssig, MCT-Träger, maximale Aufnahme' },
-  },
-
-  // VITAMIN B12 (nur vegan relevant)
-  'vitamin_b12': {
-    budget:    { marke:'Myprotein', name:'Vitamin B12', preis:'8,99', rating:'4.5 ★', reviews:'5.000+', tags:['Methylcobalamin','500µg','Günstiger Einstieg'], position:'Global Volumen', zielgruppe:'Veganer Einsteiger', kaufmotiv:'Preis-Leistung' },
-    standard:  { marke:'BioTechUSA', name:'Vitamin B12', preis:'9,90', rating:'4.6 ★', reviews:'4.000+', tags:['Methylcobalamin','EU-Produktion','Informed Sport'], position:'Review-König EU', zielgruppe:'Veganer Fitness Allrounder', kaufmotiv:'EU-Vertrauen, günstig' },
-    premium:   { marke:'ESN', name:'Vitamin B12 (Methylcobalamin)', preis:'14,90', rating:'4.7 ★', reviews:'1.500+', tags:['500µg Methylcobalamin','Höchste Bioverfügbarkeit','DACH Premium'], position:'DACH Premium', zielgruppe:'Premium Veganer', kaufmotiv:'Methylcobalamin, Markenvertrauen' },
-  },
-
-  // EISEN (hauptsächlich Frauen)
-  'eisen': {
-    budget:    { marke:'Myprotein', name:'Iron Bisglycinate', preis:'11,99', rating:'4.4 ★', reviews:'2.000+', tags:['14mg Eisen','Bisglycinat','Magenfreundlich'], position:'Global Volumen', zielgruppe:'Frauen, Einsteiger', kaufmotiv:'Günstiger Einstieg' },
-    standard:  { marke:'BioTechUSA', name:'Iron + Vitamin C', preis:'9,90', rating:'4.5 ★', reviews:'3.000+', tags:['14mg Eisen','+ Vitamin C','Bessere Aufnahme'], position:'EU Mainstream', zielgruppe:'Frauen Fitness Allrounder', kaufmotiv:'Kombi mit Vitamin C für bessere Aufnahme' },
-    premium:   { marke:'Thorne', name:'Iron Bisglycinate', preis:'24,90', rating:'4.8 ★', reviews:'2.500+', tags:['NSF zertifiziert','Höchste Reinheit','Arztempfohlen'], position:'Premium & Medical Grade', zielgruppe:'Frauen, High-End Käufer', kaufmotiv:'NSF, höchste Reinheit, arztempfohlen' },
-  },
-
-  // ASHWAGANDHA
-  'ashwagandha': {
-    budget:    { marke:'Myprotein', name:'Ashwagandha', preis:'12,99', rating:'4.5 ★', reviews:'10.000+', tags:['600mg','Wurzelextrakt','Günstiger Einstieg'], position:'Global #1 Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Günstiger Einstieg, solide Dosis' },
-    standard:  { marke:'ESN', name:'Ashwagandha KSM-66', preis:'22,90', rating:'4.7 ★', reviews:'2.500+', tags:['600mg KSM-66','≥5% Withanolide','Informed Sport'], position:'DACH #1 Gym-Markt', zielgruppe:'Athleten, Biohacker DACH', kaufmotiv:'KSM-66, Markenvertrauen' },
-    premium:   { marke:'Thorne', name:'Ashwagandha (Sensoril)', preis:'34,90', rating:'4.8 ★', reviews:'3.000+', tags:['250mg Sensoril','≥10% Withanolide','NSF zertifiziert'], position:'Premium & Medical Grade', zielgruppe:'Biohacker, Ärzte, Profisportler', kaufmotiv:'Sensoril, 10% Withanolide, NSF' },
-  },
-
-  // L-CARNITIN
-  'l_carnitin': {
-    budget:    { marke:'Myprotein', name:'L-Carnitine', preis:'14,99', rating:'4.4 ★', reviews:'8.000+', tags:['1000mg/Kapsel','Tartrat-Form','Günstiger Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger, Fettabbau', kaufmotiv:'Preis-Leistung' },
-    standard:  { marke:'BioTechUSA', name:'L-Carnitine + Chrome', preis:'12,90', rating:'4.5 ★', reviews:'5.000+', tags:['1000mg','+ Chrom für Blutzucker','EU-Produktion'], position:'EU Mainstream', zielgruppe:'Fettabbau Sportler', kaufmotiv:'Kombi-Formel, EU-Vertrauen' },
-    premium:   { marke:'ESN', name:'L-Carnitine', preis:'24,90', rating:'4.6 ★', reviews:'1.500+', tags:['2000mg','Hochdosiert','Informed Sport'], position:'DACH Premium', zielgruppe:'Fortgeschrittene, Fettabbau-Fokus', kaufmotiv:'Hochdosiert, Markenvertrauen' },
-  },
-
-  // BETA-ALANIN
-  'beta_alanin': {
-    budget:    { marke:'Myprotein', name:'Beta-Alanine', preis:'12,99', rating:'4.5 ★', reviews:'6.000+', tags:['3200mg/Portion','Ausdauer','Günstiger Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger, Ausdauersportler', kaufmotiv:'Preis-Leistung' },
-    standard:  { marke:'BioTechUSA', name:'Beta-Alanine', preis:'11,90', rating:'4.5 ★', reviews:'3.000+', tags:['3200mg','Informed Sport','EU-Produktion'], position:'EU Mainstream', zielgruppe:'Ausdauersportler', kaufmotiv:'EU-Vertrauen, günstiger Preis' },
-    premium:   { marke:'ESN', name:'Beta-Alanin', preis:'19,90', rating:'4.6 ★', reviews:'1.200+', tags:['3200mg CarnoSyn®','Patentiert','DACH Premium'], position:'DACH Premium', zielgruppe:'Fortgeschrittene, Ausdauer-Fokus', kaufmotiv:'CarnoSyn®, Markenvertrauen' },
-  },
-
-  // ELEKTROLYTE
-  'elektrolyte': {
-    budget:    { marke:'Myprotein', name:'Electrolyte Powder', preis:'14,99', rating:'4.4 ★', reviews:'4.000+', tags:['Na+K+Mg+Ca','Ohne Zucker','Günstiger Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger, Ausdauer', kaufmotiv:'Preis-Leistung' },
-    standard:  { marke:'ESN', name:'Electrolytes', preis:'19,90', rating:'4.6 ★', reviews:'1.500+', tags:['Vollständige Formel','Kein Zucker','Informed Sport'], position:'DACH Gym-Markt', zielgruppe:'Athleten, Ausdauersportler', kaufmotiv:'Vollständige Elektrolyt-Formel' },
-    premium:   { marke:'Olimp', name:'Iso Plus Professional', preis:'19,90', rating:'4.5 ★', reviews:'3.000+', tags:['Elektrolyte + Vitamine','Performance','Funktional EU'], position:'Functional EU #1', zielgruppe:'Gesundheitssportler, Ausdauer', kaufmotiv:'Vollständige Performance-Formel' },
-  },
-
-  // VITAMIN C
-  'vitamin_c': {
-    budget:    { marke:'Myprotein', name:'Vitamin C', preis:'7,99', rating:'4.6 ★', reviews:'10.000+', tags:['500mg','Ascorbinsäure','Günstigster Einstieg'], position:'Global Volumen', zielgruppe:'Alle', kaufmotiv:'Günstigste Option' },
-    standard:  { marke:'BioTechUSA', name:'Vitamin C 1000', preis:'8,90', rating:'4.6 ★', reviews:'6.000+', tags:['1000mg','+ Bioflavonoide','EU-Produktion'], position:'EU Mainstream', zielgruppe:'Fitness Allrounder', kaufmotiv:'Hochdosiert, EU-Vertrauen' },
-    premium:   { marke:'Thorne', name:'Vitamin C with Flavonoids', preis:'19,90', rating:'4.8 ★', reviews:'3.500+', tags:['NSF zertifiziert','+ Bioflavonoide','Höchste Reinheit'], position:'Premium Medical Grade', zielgruppe:'Biohacker, Qualitätsbewusste', kaufmotiv:'NSF, Reinheit, arztempfohlen' },
-  },
-
-  // ZINK
-  'zink': {
-    budget:    { marke:'Myprotein', name:'Zinc', preis:'6,99', rating:'4.5 ★', reviews:'7.000+', tags:['15mg','Zinkcitrat','Günstigster Einstieg'], position:'Global Volumen', zielgruppe:'Alle', kaufmotiv:'Günstigste Option' },
-    standard:  { marke:'BioTechUSA', name:'Zinc Chelate', preis:'7,90', rating:'4.6 ★', reviews:'4.000+', tags:['15mg Chelat','Bessere Aufnahme','EU-Produktion'], position:'EU Mainstream', zielgruppe:'Fitness Allrounder', kaufmotiv:'Chelat-Form für bessere Aufnahme' },
-    premium:   { marke:'Thorne', name:'Zinc Picolinate', preis:'16,90', rating:'4.8 ★', reviews:'4.000+', tags:['NSF zertifiziert','Picolinat-Form','Höchste Bioverfügbarkeit'], position:'Premium Medical Grade', zielgruppe:'Biohacker, Qualitätsbewusste', kaufmotiv:'Picolinat, NSF, arztempfohlen' },
-  },
-
-  // KOLLAGEN
-  'kollagen': {
-    budget:    { marke:'Myprotein', name:'Collagen Peptides', preis:'16,99', rating:'4.5 ★', reviews:'8.000+', tags:['10g/Portion','Typ I','Günstigster Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger', kaufmotiv:'Günstiger Einstieg' },
-    standard:  { marke:'Weider', name:'Collagen + Vitamin C', preis:'19,90', rating:'4.5 ★', reviews:'900+', tags:['Typ I + III','+ Vitamin C Synergie','+ Biotin'], position:'Tradition EU seit 1973', zielgruppe:'30+ Frauen, Qualitätskäufer', kaufmotiv:'Biotin + Vitamin C Kombination' },
-    premium:   { marke:'Norsan', name:'Kollagen Peptide', preis:'34,90', rating:'4.8 ★', reviews:'5.000+', tags:['Weidehaltung','Typ I + III','10g/Portion','IFOS'], position:'Premium DACH #1', zielgruppe:'Gesundheitsfokus, Frauen 30+', kaufmotiv:'Weidehaltung, höchste Qualität' },
-  },
-
-  // EAAs
-  'eaas': {
-    budget:    { marke:'Myprotein', name:'Essential BCAA 2:1:1', preis:'14,99', rating:'4.5 ★', reviews:'25.000+', tags:['6g BCAA','Günstiger Einstieg','25.000 Reviews'], position:'Global #1 BCAA Volumen', zielgruppe:'Einsteiger', kaufmotiv:'Günstigster BCAA-Einstieg' },
-    standard:  { marke:'BioTechUSA', name:'BCAA + Glutamine Zero', preis:'19,90', rating:'4.6 ★', reviews:'8.000+', tags:['6g BCAA + Glutamin','EU-Vertrauen','Informed Sport'], position:'Review-König EU', zielgruppe:'Fitness Allrounder', kaufmotiv:'BCAA + Glutamin Kombi' },
-    premium:   { marke:'ESN', name:'EAA Zero', preis:'29,90', rating:'4.7 ★', reviews:'4.000+', tags:['Alle 9 essentiellen AS','7.5g EAA','DACH #1 EAA'], position:'DACH #1 EAA', zielgruppe:'Fortgeschrittene, Muskelaufbau', kaufmotiv:'Vollständiges EAA-Profil' },
-  },
-
-  // L-GLUTAMIN
-  'l_glutamin': {
-    budget:    { marke:'Myprotein', name:'Glutamine', preis:'11,99', rating:'4.5 ★', reviews:'5.000+', tags:['5g/Portion','Reine Formel','Günstiger Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger, Ausdauer', kaufmotiv:'Preis-Leistung' },
-    standard:  { marke:'BioTechUSA', name:'Glutamine', preis:'10,90', rating:'4.5 ★', reviews:'3.000+', tags:['5g','EU-Produktion','Informed Sport'], position:'EU Mainstream', zielgruppe:'Ausdauersportler', kaufmotiv:'EU-Vertrauen, günstig' },
-    premium:   { marke:'ESN', name:'L-Glutamine', preis:'19,90', rating:'4.6 ★', reviews:'1.000+', tags:['Pharmaqualität','Informed Sport','DACH Premium'], position:'DACH Premium', zielgruppe:'Fortgeschrittene', kaufmotiv:'Höchste Reinheit, Markenvertrauen' },
-  },
-
-  // MULTIVITAMIN
-  'multivitamin': {
-    budget:    { marke:'Myprotein', name:'Daily Vitamins', preis:'9,99', rating:'4.5 ★', reviews:'6.000+', tags:['Vollständig','Günstig','Tagesversorgung'], position:'Global Volumen', zielgruppe:'Alle', kaufmotiv:'Günstigste Option' },
-    standard:  { marke:'Optimum Nutrition', name:'Opti-Men/Opti-Women', preis:'24,90', rating:'4.6 ★', reviews:'8.000+', tags:['75+ Zutaten','Männer/Frauen Version','Global Standard'], position:'Global Benchmark', zielgruppe:'Aktive Sportler', kaufmotiv:'Umfassendste Formel' },
-    premium:   { marke:'Thorne', name:'Basic Nutrients 2/Day', preis:'39,90', rating:'4.8 ★', reviews:'3.000+', tags:['NSF zertifiziert','Bioaktive Formen','Arztempfohlen'], position:'Premium Medical Grade', zielgruppe:'Biohacker, Gesundheitsbewusste', kaufmotiv:'NSF, bioaktive Formen, arztempfohlen' },
-  },
-
-  // ZMA
-  'zma': {
-    budget:    { marke:'Myprotein', name:'ZMA', preis:'12,99', rating:'4.4 ★', reviews:'5.000+', tags:['Zn+Mg+B6','Schlaf','Günstiger Einstieg'], position:'Global Volumen', zielgruppe:'Einsteiger', kaufmotiv:'Günstigste Option' },
-    standard:  { marke:'BioTechUSA', name:'ZMA', preis:'11,90', rating:'4.5 ★', reviews:'4.000+', tags:['Klassische Formel','EU-Produktion','Informed Sport'], position:'EU Mainstream', zielgruppe:'Sportler, Schlaf-Fokus', kaufmotiv:'EU-Vertrauen, günstig' },
-    premium:   { marke:'ESN', name:'ZMA', preis:'19,90', rating:'4.7 ★', reviews:'1.200+', tags:['Hochdosiert','Bisglycinat-Form','DACH Premium'], position:'DACH Premium', zielgruppe:'Fortgeschrittene, Schlaf-Optimierer', kaufmotiv:'Bisglycinat-Form, Markenvertrauen' },
-  },
-
-  // PRE-WORKOUT BOOSTER
-  'pre_workout': {
-    budget:    { marke:'Myprotein', name:'THE Pre-Workout', preis:'24,99', rating:'4.5 ★', reviews:'12.000+', tags:['200mg Koffein','6g Citrullin','3,2g Beta-Alanin'], position:'Global #1 Volumen', zielgruppe:'Einsteiger, Preisbewusste', kaufmotiv:'Bestes Preis-Leistungs-Verhältnis' },
-    standard:  { marke:'BioTechUSA', name:'Crash Pre-Workout', preis:'24,90', rating:'4.5 ★', reviews:'6.000+', tags:['300mg Koffein','6g Citrullin','Stärkster Stimulant'], position:'Review-König EU', zielgruppe:'Fortgeschrittene', kaufmotiv:'Starke Wirkung, viele Reviews' },
-    premium:   { marke:'ESN', name:'Crank Pre-Workout', preis:'34,90', rating:'4.7 ★', reviews:'3.500+', tags:['200mg Koffein','6g Citrullin','Informed Sport','DACH #1'], position:'DACH #1 Gym-Booster', zielgruppe:'Gym-Enthusiasten, Fortgeschrittene', kaufmotiv:'Wirkung + Markenvertrauen + Geschmack' },
-  },
-};
-
-// ===== DOSIERUNGS-ENGINE =====
-function berechneDosis(supp, a) {
-  var kg = parseFloat(a.gewicht) || 75;
-  var w  = a.geschlecht === 'B';
-  var ki = a.training === 'A';
-  var tr = a.training !== 'E';
-  var mu = (a.ziele || []).indexOf('A') >= 0;
-  var pb = mu && ki ? Math.round(kg*2) : mu ? Math.round(kg*1.8) : tr ? Math.round(kg*1.6) : Math.round(kg*1.2);
-
-  var map = {
-    'whey_protein':   { dosis: (w?'20–25 g':'25–35 g') + ' (Tagesziel: ' + pb + ' g)', zeit: 'Nach dem Training' },
-    'iso_clear':      { dosis: (w?'20–25 g':'25–35 g') + ' (Tagesziel: ' + pb + ' g)', zeit: 'Nach dem Training' },
-    'pflanzenprotein':{ dosis: (w?'20–25 g':'25–35 g') + ' (Tagesziel: ' + pb + ' g)', zeit: 'Nach dem Training' },
-    'kreatin':        { dosis: (kg<=70?'3 g':'5 g') + ' täglich', zeit: 'Täglich – egal wann' },
-    'magnesium':      { dosis: w?(ki?'300 mg':'250 mg'):(ki?'400 mg':'350 mg'), zeit: 'Abends vor dem Schlafen' },
-    'omega3':         { dosis: tr?'2–3 g EPA/DHA':'1–2 g EPA/DHA', zeit: 'Zu einer Mahlzeit' },
-    'omega3_vegan':   { dosis: tr?'2–3 g EPA/DHA':'1–2 g EPA/DHA', zeit: 'Zu einer Mahlzeit' },
-    'vitamin_d3':     { dosis: (a.intro==='D'||a.intro==='E')?'2.000–4.000 IE':'1.000–2.000 IE', zeit: 'Morgens zum Frühstück' },
-    'vitamin_b12':    { dosis: '500 µg (Methylcobalamin)', zeit: 'Morgens nüchtern' },
-    'eisen':          { dosis: w?'18 mg (Bisglycinat)':'10 mg (Bisglycinat)', zeit: 'Morgens nüchtern + Vitamin C' },
-    'ashwagandha':    { dosis: '300–600 mg', zeit: 'Abends vor dem Schlafen' },
-    'l_carnitin':     { dosis: '1.500–2.000 mg', zeit: 'Vor dem Training (nüchtern)' },
-    'beta_alanin':    { dosis: '3.200 mg', zeit: 'Vor dem Training' },
-    'elektrolyte':    { dosis: '1 Portion', zeit: 'Während dem Training' },
-    'vitamin_c':      { dosis: '500–1.000 mg', zeit: 'Morgens zum Frühstück' },
-    'zink':           { dosis: '15 mg', zeit: 'Abends' },
-    'kollagen':       { dosis: '10–15 g', zeit: 'Morgens nüchtern' },
-    'eaas':           { dosis: '10–15 g', zeit: 'Während dem Training' },
-    'l_glutamin':     { dosis: '5 g', zeit: 'Nach dem Training' },
-    'multivitamin':   { dosis: '1 Kapsel', zeit: 'Morgens zum Frühstück' },
-    'zma':            { dosis: '1 Portion', zeit: 'Abends vor dem Schlafen' },
-    'pre_workout':    { dosis: '1 Portion (20–30 Min. vor Training)', zeit: 'Vor dem Training' },
-  };
-  return map[supp] || { dosis: 'Laut Produktangabe', zeit: 'Täglich' };
-}
-
-// ===== EMPFEHLUNGS-ENGINE – KERN DER APP =====
-function berechneEmpfehlungen(a) {
-  var ziele  = a.ziele  || ['F'];
-  var vegan  = a.ernaehrung === 'D';
-  var veggi  = a.ernaehrung === 'C';
-  var w      = a.geschlecht === 'B';
-  var alter  = a.intro; // A=<18, B=18-25, C=26-35, D=36-45, E=>45
-  var kraft  = a.training === 'A' || a.training === 'B';
-  var cardio = a.training === 'C';
-  var mix    = a.training === 'D';
-  var wenig  = a.training === 'E';
-  var vorh   = a.vorhanden || ['A'];
-  var budget = a.budget || 'standard'; // sparpaket / standard / premium
-  var erfahrung = a.erfahrung || 'einsteiger';
-
-  var mu    = ziele.indexOf('A') >= 0;
-  var fett  = ziele.indexOf('B') >= 0;
-  var energie = ziele.indexOf('C') >= 0;
-  var ausd  = ziele.indexOf('D') >= 0;
-  var regen = ziele.indexOf('E') >= 0;
-  var health= ziele.indexOf('F') >= 0;
-
-  // Was hat der User bereits?
-  var hatProtein  = vorh.indexOf('B') >= 0;
-  var hatKreatin  = vorh.indexOf('C') >= 0;
-  var hatVitD     = vorh.indexOf('D') >= 0;
-  var hatOmega3   = vorh.indexOf('E') >= 0;
-  var hatMg       = vorh.indexOf('F') >= 0;
-  var hatB12      = vorh.indexOf('G') >= 0;
-
-  var empfehlungen = [];
-
-  // --- EBENE 1: ESSENTIALS (fast immer) ---
-
-  // Vitamin D3 – fast jeder braucht es
-  if (!hatVitD) {
-    empfehlungen.push({
-      id: 'vitamin_d3',
-      prioritaet: 'essential',
-      kategorie: 'gesundheit',
-      name: 'Vitamin D3 + K2',
-      ikon: '☀️',
-      warum: 'Vitamin D-Mangel betrifft über 60% der Bevölkerung in Mitteleuropa. Ohne ausreichend Vitamin D sind Immunsystem, Hormonproduktion und Knochengesundheit eingeschränkt – besonders relevant für Sportler und ältere Personen.',
-      fit_grund: buildFitGrund_D3(a),
-    });
-  }
-
-  // Omega-3 – fast jeder braucht es
-  if (!hatOmega3) {
-    var o3id = vegan ? 'omega3_vegan' : 'omega3';
-    empfehlungen.push({
-      id: o3id,
-      prioritaet: 'essential',
-      kategorie: 'gesundheit',
-      name: vegan ? 'Omega-3 (Algenöl)' : 'Omega-3',
-      ikon: '🐟',
-      warum: 'Omega-3 (EPA/DHA) reduziert Entzündungen, verbessert die Herzgesundheit und beschleunigt die Regeneration nach dem Training. Die meisten Menschen nehmen zu wenig auf – besonders bei westlicher Ernährung.',
-      fit_grund: buildFitGrund_O3(a, vegan),
-    });
-  }
-
-  // Magnesium – besonders für Sportler
-  if (!hatMg && (kraft || cardio || mix || regen || wenig)) {
-    empfehlungen.push({
-      id: 'magnesium',
-      prioritaet: 'essential',
-      kategorie: 'gesundheit',
-      name: 'Magnesium Bisglycinat',
-      ikon: '🌙',
-      warum: 'Magnesium ist an über 300 enzymatischen Prozessen beteiligt. Bei sportlicher Belastung wird mehr ausgeschieden. Bisglycinat ist die bioverfügbarste Form – fördert Schlafqualität, verhindert Muskelkrämpfe und unterstützt die Regeneration.',
-      fit_grund: buildFitGrund_Mg(a),
-    });
-  }
-
-  // --- EBENE 2: ZIEL-SPEZIFISCH ---
-
-  // PROTEIN – für alle die trainieren
-  if (!hatProtein && !wenig) {
-    if (vegan) {
-      empfehlungen.push({
-        id: 'pflanzenprotein',
-        prioritaet: 'essential',
-        kategorie: 'performance',
-        name: 'Pflanzenprotein',
-        ikon: '🌱',
-        warum: 'Als Veganer ist es schwieriger, ausreichend Protein aus der Nahrung zu decken – besonders alle essentiellen Aminosäuren. Ein hochwertiges Pflanzenprotein (Erbse + Reis) schließt diese Lücke und unterstützt Muskelaufbau und Regeneration.',
-        fit_grund: 'Veganer Proteinbedarf optimal abdecken – Erbse+Reis für vollständiges Aminosäureprofil',
-      });
-    } else if (mu || kraft || mix || (ausd && !wenig)) {
-      var proteinTyp = (erfahrung === 'profi' || budget === 'premium') ? 'iso_clear' : 'whey_protein';
-      empfehlungen.push({
-        id: proteinTyp,
-        prioritaet: 'essential',
-        kategorie: 'performance',
-        name: proteinTyp === 'iso_clear' ? 'ISO Clear Protein' : 'Whey Protein',
-        ikon: '💪',
-        warum: 'Protein ist der wichtigste Baustein für Muskeln. Ohne ausreichend Protein (ca. ' + (parseFloat(a.gewicht||75)*1.6).toFixed(0) + '–' + (parseFloat(a.gewicht||75)*2.2).toFixed(0) + 'g täglich) können Muskeln nicht aufgebaut oder erhalten werden – egal wie gut das Training ist.',
-        fit_grund: buildFitGrund_Protein(a, proteinTyp),
-      });
-    }
-  }
-
-  // KREATIN – Krafttraining, Muskelaufbau
-  if (!hatKreatin && (mu || kraft || (mix && mu))) {
-    empfehlungen.push({
-      id: 'kreatin',
-      prioritaet: 'essential',
-      kategorie: 'performance',
-      name: 'Kreatin Monohydrat',
-      ikon: '⚡',
-      warum: 'Kreatin ist das am besten erforschte Supplement überhaupt – über 500 Studien belegen seine Wirksamkeit. Es steigert Kraft um 5–15%, Muskelmasse und Erholung zwischen Sätzen. Sicher, günstig und wirkt bei jedem.',
-      fit_grund: 'Krafttraining + Muskelaufbau: Kreatin ist das #1 evidenzbasierte Supplement für dein Ziel',
-    });
-  }
-
-  // VITAMIN B12 – Veganer
-  if (vegan && !hatB12) {
-    empfehlungen.push({
-      id: 'vitamin_b12',
-      prioritaet: 'essential',
-      kategorie: 'gesundheit',
-      name: 'Vitamin B12',
-      ikon: '🧪',
-      warum: 'B12 kommt natürlich nur in tierischen Produkten vor. Bei veganer Ernährung ist ein Mangel ohne Supplementierung unvermeidbar – mit gravierenden Folgen für Nervensystem, Blutbildung und Energiestoffwechsel.',
-      fit_grund: 'Als Veganer: B12-Supplementierung ist nicht optional sondern medizinisch notwendig',
-    });
-  }
-
-  // EISEN – Frauen (besonders bei Ausdauer)
-  if (w && (ausd || cardio || health) && alter !== 'A') {
-    empfehlungen.push({
-      id: 'eisen',
-      prioritaet: 'empfohlen',
-      kategorie: 'gesundheit',
-      name: 'Eisen Bisglycinat',
-      ikon: '🩸',
-      warum: 'Eisenmangel ist der weltweit häufigste Nährstoffmangel und betrifft besonders Frauen im gebärfähigen Alter. Eisen ist entscheidend für Sauerstofftransport – ein Mangel führt zu Müdigkeit, schlechter Leistung und langer Regeneration.',
-      fit_grund: buildFitGrund_Eisen(a),
-    });
-  }
-
-  // ASHWAGANDHA – Stress, Regeneration, Cortisol
-  if (regen || (mu && kraft && a.training === 'A') || energie) {
-    empfehlungen.push({
-      id: 'ashwagandha',
-      prioritaet: erfahrung === 'einsteiger' ? 'optional' : 'empfohlen',
-      kategorie: 'wellbeing',
-      name: 'Ashwagandha KSM-66',
-      ikon: '🌿',
-      warum: 'Ashwagandha senkt nachweislich Cortisol um 20–30% und verbessert Schlafqualität, Stressresistenz und Erholung. Besonders wirksam bei intensivem Training und hoher Alltagsbelastung.',
-      fit_grund: buildFitGrund_Ashwa(a),
-    });
-  }
-
-  // L-CARNITIN – Fettabbau
-  if (fett && (kraft || cardio || mix)) {
-    empfehlungen.push({
-      id: 'l_carnitin',
-      prioritaet: 'empfohlen',
-      kategorie: 'performance',
-      name: 'L-Carnitin',
-      ikon: '🔥',
-      warum: 'L-Carnitin transportiert langkettige Fettsäuren in die Mitochondrien zur Energiegewinnung. Besonders wirksam in Kombination mit Training – steigert die Fettverbrennung und spart Glykogen.',
-      fit_grund: 'Fettabbau-Ziel: L-Carnitin optimiert die Fettverwertung bei deinem Training',
-    });
-  }
-
-  // BETA-ALANIN – Ausdauer, intensives Training
-  if ((ausd || cardio) && !wenig && erfahrung !== 'einsteiger') {
-    empfehlungen.push({
-      id: 'beta_alanin',
-      prioritaet: 'empfohlen',
-      kategorie: 'performance',
-      name: 'Beta-Alanin',
-      ikon: '🏃',
-      warum: 'Beta-Alanin erhöht den Carnosin-Spiegel in Muskeln und puffert damit Laktat. Das verzögert Muskelermüdung bei hochintensiver Ausdauerbelastung um 15–25%. Besonders wirksam bei Intervalltraining.',
-      fit_grund: 'Ausdauertraining: Beta-Alanin verzögert Muskelermüdung und steigert deine Performance',
-    });
-  }
-
-  // ELEKTROLYTE – intensive Ausdauer
-  if ((ausd || cardio) && !wenig) {
-    empfehlungen.push({
-      id: 'elektrolyte',
-      prioritaet: 'empfohlen',
-      kategorie: 'performance',
-      name: 'Elektrolyte',
-      ikon: '💧',
-      warum: 'Bei langen Trainingseinheiten verlierst du mit dem Schweiß erhebliche Mengen an Natrium, Kalium und Magnesium. Elektrolyte schützen vor Krämpfen, Leistungsabfall und halten die Hydration aufrecht.',
-      fit_grund: 'Ausdauertraining: Elektrolyt-Verlust durch Schwitzen ausgleichen für maximale Performance',
-    });
-  }
-
-  // VITAMIN C – Immunsystem, Diätphase, Frauen
-  if ((fett || health || w) && erfahrung !== 'einsteiger') {
-    empfehlungen.push({
-      id: 'vitamin_c',
-      prioritaet: 'optional',
-      kategorie: 'gesundheit',
-      name: 'Vitamin C',
-      ikon: '🍊',
-      warum: 'Vitamin C ist ein starkes Antioxidans, stärkt das Immunsystem und verbessert die Eisenaufnahme. In der Diätphase oder bei intensivem Training ist das Immunsystem besonders belastet.',
-      fit_grund: buildFitGrund_VitC(a),
-    });
-  }
-
-  // ZINK – Immunsystem, Hormonhaushalt, Männer
-  if ((health || regen || (mu && !w)) && erfahrung !== 'einsteiger') {
-    empfehlungen.push({
-      id: 'zink',
-      prioritaet: 'optional',
-      kategorie: 'gesundheit',
-      name: 'Zink',
-      ikon: '🔷',
-      warum: 'Zink ist essenziell für Immunfunktion, Wundheilung und Hormonsynthese (inkl. Testosteron). Sportler verlieren mehr Zink durch Schwitzen – ein Mangel senkt die Leistungsfähigkeit.',
-      fit_grund: buildFitGrund_Zink(a),
-    });
-  }
-
-  // EAAs – fortgeschrittene Sportler, intensives Training
-  if (mu && kraft && erfahrung === 'profi' && !vegan) {
-    empfehlungen.push({
-      id: 'eaas',
-      prioritaet: 'optional',
-      kategorie: 'performance',
-      name: 'EAAs (Essentielle Aminosäuren)',
-      ikon: '🔬',
-      warum: 'EAAs liefern alle 9 essentiellen Aminosäuren und stimulieren die Muskelproteinsynthese optimal. Für Fortgeschrittene die während dem Training zusätzliche Aminosäuren wollen – besonders bei langen Einheiten.',
-      fit_grund: 'Fortgeschrittener Muskelaufbau: EAAs optimieren die Proteinsynthese während dem Training',
-    });
-  }
-
-  // L-GLUTAMIN – intensives Training, Ausdauer
-  if ((ausd || (kraft && erfahrung === 'profi')) && !wenig) {
-    empfehlungen.push({
-      id: 'l_glutamin',
-      prioritaet: 'optional',
-      kategorie: 'performance',
-      name: 'L-Glutamin',
-      ikon: '🛡️',
-      warum: 'L-Glutamin ist die häufigste Aminosäure im Körper und wird bei intensivem Training stark verbraucht. Unterstützt Darmgesundheit, Immunsystem und Regeneration bei hohem Trainingsvolumen.',
-      fit_grund: 'Intensives Training: Glutamin unterstützt Darmgesundheit und Immunsystem',
-    });
-  }
-
-  // KOLLAGEN – Frauen 30+, Gelenke, Regeneration
-  if (w && (alter === 'D' || alter === 'E' || regen)) {
-    empfehlungen.push({
-      id: 'kollagen',
-      prioritaet: 'optional',
-      kategorie: 'gesundheit',
-      name: 'Kollagen Peptide',
-      ikon: '✨',
-      warum: 'Ab 30 nimmt die körpereigene Kollagenproduktion ab. Kollagen-Supplementierung stärkt Gelenke, Sehnen, Haut und Haare. Besonders relevant für Frauen ab 35 und alle mit hohem Trainingsvolumen.',
-      fit_grund: buildFitGrund_Kollagen(a),
-    });
-  }
-
-  // ZMA – Schlaf, Regeneration, Erfahrene
-  if (regen && erfahrung !== 'einsteiger' && !hatMg) {
-    // Nur wenn Magnesium nicht schon drin ist
-    var hatSchonMg = empfehlungen.some(function(e){ return e.id === 'magnesium'; });
-    if (!hatSchonMg) {
-      empfehlungen.push({
-        id: 'zma',
-        prioritaet: 'optional',
-        kategorie: 'wellbeing',
-        name: 'ZMA (Zink + Magnesium + B6)',
-        ikon: '💤',
-        warum: 'ZMA ist die klassische Kombi für besseren Schlaf und optimale Regeneration. Zink und Magnesium werden durch Sport verbraucht – B6 verbessert die Aufnahme beider.',
-        fit_grund: 'Regeneration-Fokus: ZMA optimiert Schlafqualität und hormonelle Erholung',
-      });
-    }
-  }
-
-  // PRE-WORKOUT – intensives Krafttraining, fortgeschritten
-  if (kraft && erfahrung !== 'einsteiger' && !wenig) {
-    empfehlungen.push({
-      id: 'pre_workout',
-      prioritaet: 'optional',
-      kategorie: 'performance',
-      name: 'Pre-Workout Booster',
-      ikon: '🚀',
-      warum: 'Ein guter Pre-Workout steigert Fokus, Kraft und Ausdauer im Training durch die Kombination von Koffein, Citrullin und Beta-Alanin. Sinnvoll für intensives Krafttraining – nicht für Einsteiger empfohlen.',
-      fit_grund: 'Krafttraining: Maximale Performance bei schweren Einheiten',
-    });
-  }
-
-  return empfehlungen;
-}
-
-// FIT-GRUND Hilfsfunktionen
-function buildFitGrund_D3(a) {
+// ── AVATAR ENGINE ──
+function getAvatar(a) {
+  var w = a.geschlecht === 'B';
   var alter = a.intro;
-  if (alter === 'D' || alter === 'E') return 'Ab 36 Jahren sinkt die Vitamin-D-Produktion in der Haut – höhere Dosierung (2.000–4.000 IE) empfohlen';
-  if (a.ernaehrung === 'D') return 'Veganer: Vitamin D3 aus Lichen (pflanzlich) – deckt den kritischsten Vitaminmangel ab';
-  return 'Essentiell für Immunsystem, Knochen und Hormonproduktion – in Mitteleuropa bei den meisten unzureichend';
-}
-function buildFitGrund_O3(a, vegan) {
-  if (vegan) return 'Algenöl: vegane Quelle für EPA+DHA – ohne Fischgeschmack, nachhaltig und hochwirksam';
-  if ((a.ziele||[]).indexOf('A') >= 0) return 'Muskelaufbau: Omega-3 reduziert Entzündungen nach dem Training und verbessert die Proteinverwertung';
-  if ((a.ziele||[]).indexOf('D') >= 0) return 'Ausdauer: Anti-entzündliche Wirkung beschleunigt Erholung nach langen Einheiten';
-  return 'Herzgesundheit + Entzündungsreduktion: die wichtigste tägliche Grundversorgung für jeden';
-}
-function buildFitGrund_Mg(a) {
-  if (a.training === 'A') return 'Intensives Krafttraining: erhöhter Mg-Verlust durch Schwitzen – Bisglycinat für beste Aufnahme und Tiefschlaf';
-  if ((a.ziele||[]).indexOf('E') >= 0) return 'Regeneration-Fokus: Magnesium entspannt Muskeln, fördert Tiefschlaf und beschleunigt Erholung';
-  return 'Sport erhöht den Magnesiumbedarf – Bisglycinat ist die schonendste und effektivste Form';
-}
-function buildFitGrund_Protein(a, typ) {
-  var kg = parseFloat(a.gewicht) || 75;
-  var bedarf = Math.round(kg * 1.8);
-  if (typ === 'iso_clear') return 'ISO Clear: kalorienarm, wasserklarer Drink – ideal für Definitionsphase und höhere Qualitätsansprüche. Tagesziel: ' + bedarf + 'g Protein';
-  return 'Whey Protein schließt die Protein-Lücke zu deinem Tagesziel von ' + bedarf + 'g – schnell verfügbar nach dem Training';
-}
-function buildFitGrund_Eisen(a) {
-  if ((a.ziele||[]).indexOf('D') >= 0) return 'Ausdauersport + Frau: Eisenmangel ist häufigste Ursache für Leistungseinbußen bei Athletinnen – Bisglycinat für beste Magenverträglichkeit';
-  return 'Frauen im gebärfähigen Alter: erhöhter Eisenbedarf – Bisglycinat für optimale Aufnahme ohne Magenprobleme';
-}
-function buildFitGrund_Ashwa(a) {
-  if (a.training === 'A') return 'Intensivstes Training (4+x/Woche) erhöht Cortisol massiv – Ashwagandha KSM-66 senkt Cortisol und verbessert Erholung';
-  if ((a.ziele||[]).indexOf('E') >= 0) return 'Regeneration-Fokus: KSM-66 verbessert Schlaftiefe und senkt Stresshormone für optimale Erholung';
-  return 'Energie + Stressresistenz: Ashwagandha balanciert Cortisol und gibt nachhaltige Energie ohne Crash';
-}
-function buildFitGrund_VitC(a) {
-  if ((a.ziele||[]).indexOf('B') >= 0) return 'Diätphase: Vitamin C schützt das Immunsystem wenn Kalorien reduziert werden – Antioxidans gegen Training-Stress';
-  if (a.geschlecht === 'B') return 'Frauen: Vitamin C verbessert Eisenaufnahme erheblich – zusammen mit Eisen-Supplementierung einnehmen';
-  return 'Immunsystem-Support + Antioxidans: besonders bei hohem Trainingsvolumen sinnvoll';
-}
-function buildFitGrund_Zink(a) {
-  if (a.geschlecht === 'A') return 'Männer: Zink ist entscheidend für Testosteron-Produktion und Fruchtbarkeit – Sportler verlieren mehr durch Schwitzen';
-  return 'Immunfunktion + Wundheilung: Zink-Mangel ist bei Sportlern häufig und mindert Leistungsfähigkeit';
-}
-function buildFitGrund_Kollagen(a) {
-  var alter = a.intro;
-  if (alter === 'D' || alter === 'E') return 'Ab 36 Jahren: Kollagenproduktion sinkt deutlich – Supplementierung schützt Gelenke, Sehnen und Haut';
-  if ((a.ziele||[]).indexOf('E') >= 0) return 'Regeneration + Gelenk-Support: Kollagen stärkt Sehnen und Knorpel – ideal bei hohem Trainingsvolumen';
-  return 'Frauen 30+: Kollagen Typ I + III für Haut, Haare, Nägel und Gelenk-Gesundheit';
-}
-
-// ===== BUDGET → PRODUKT SELEKTION =====
-function waehleProdukt(suppId, budget) {
-  var db = PRODUKTE[suppId];
-  if (!db) return null;
-  if (budget === 'sparpaket') return db.budget;
-  if (budget === 'premium') return db.premium;
-  return db.standard;
-}
-
-// ===== EINNAHMEPLAN BUILDER =====
-function bauePlan(empfehlungen, a) {
-  var slots = {};
-  var ord = ['Morgens nüchtern','Morgens zum Frühstück','Vor dem Training','Während dem Training','Nach dem Training','Zu einer Mahlzeit','Täglich – egal wann','Abends','Abends vor dem Schlafen'];
-  empfehlungen.forEach(function(e) {
-    var d = berechneDosis(e.id, a);
-    if (!slots[d.zeit]) slots[d.zeit] = [];
-    slots[d.zeit].push({ name: e.name, dosis: d.dosis });
-  });
-  var res = [];
-  ord.forEach(function(z) { if (slots[z]) res.push({ zeit: z, items: slots[z] }); });
-  return res;
-}
-
-// ===== KATEGORIE LABELS =====
-var ALT  = {A:'Unter 18',B:'18–25 Jahre',C:'26–35 Jahre',D:'36–45 Jahre',E:'Über 45 Jahre'};
-var TRG  = {A:'Krafttraining 4+×/Wo',B:'Krafttraining 2–3×/Wo',C:'Hauptsächlich Cardio',D:'Mix',E:'Wenig Sport'};
-var ERN  = {A:'Omnivor',B:'Flexitarisch',C:'Vegetarisch',D:'Vegan'};
-var GES  = {A:'Männlich',B:'Weiblich',C:'Keine Angabe'};
-var ZIEL = {A:'Muskelaufbau',B:'Fettabbau',C:'Mehr Energie',D:'Ausdauer',E:'Regeneration',F:'Gesundheit'};
-var BUD  = {sparpaket:'Budget-Fokus',standard:'Preis-Leistung',premium:'Premium-Qualität'};
-var ERF  = {einsteiger:'Einsteiger',fortgeschritten:'Fortgeschritten',profi:'Profi'};
-var VOR  = {A:'Nichts',B:'Protein',C:'Kreatin',D:'Vitamin D',E:'Omega-3',F:'Magnesium',G:'B12',H:'Sonstiges'};
-
-// ===== ERGEBNIS RENDERN =====
-function zeigeErgebnis() {
-  var a = AW;
-  var empfehlungen = berechneEmpfehlungen(a);
-  var budget = a.budget || 'standard';
-  var ziele = a.ziele || ['F'];
-  var vor = a.vorhanden || ['A'];
-  var hatBestehendes = vor.indexOf('A') < 0;
-
-  // Preise summieren
-  var gesamtPreis = 0;
-  empfehlungen.forEach(function(e) {
-    var p = waehleProdukt(e.id, budget);
-    if (p) {
-      var preis = parseFloat(p.preis.replace(',','.'));
-      gesamtPreis += preis;
-    }
-  });
-
-  // Empfehlungen nach Priorität sortieren
-  var prio = {essential:0, empfohlen:1, optional:2};
-  empfehlungen.sort(function(a,b){ return prio[a.prioritaet] - prio[b.prioritaet]; });
-
-  var plan = bauePlan(empfehlungen, a);
-
-  var h = '';
-
-  // HEADER
-  h += '<div class="ergebnis-header">';
-  h += '<div class="ergebnis-badge">✦ Deine persönliche Analyse</div>';
-  h += '<h2>' + empfehlungen.length + ' Supplements empfohlen</h2>';
-  h += '<p>Exakt auf dein Profil zugeschnitten – keine unnötigen Extras, alles was du wirklich brauchst.</p>';
-  h += '</div>';
-
-  // PROFIL-ZUSAMMENFASSUNG
-  h += '<div class="profil-summary">';
-  h += '<div class="profil-summary-titel">Dein Profil</div>';
-  h += '<div class="profil-chips">';
-  if (a.intro) h += '<span class="profil-chip grau">' + (ALT[a.intro]||'') + '</span>';
-  if (a.geschlecht) h += '<span class="profil-chip grau">' + (GES[a.geschlecht]||'') + '</span>';
-  if (a.gewicht) h += '<span class="profil-chip grau">' + a.gewicht + ' kg / ' + (a.groesse||'?') + ' cm</span>';
-  if (a.training) h += '<span class="profil-chip grau">' + (TRG[a.training]||'') + '</span>';
-  if (a.ernaehrung) h += '<span class="profil-chip grau">' + (ERN[a.ernaehrung]||'') + '</span>';
-  if (a.erfahrung) h += '<span class="profil-chip grau">' + (ERF[a.erfahrung]||'') + '</span>';
-  ziele.forEach(function(z){ h += '<span class="profil-chip">' + (ZIEL[z]||z) + '</span>'; });
-  h += '<span class="profil-chip" style="background:rgba(74,144,217,0.08);border-color:rgba(74,144,217,0.2);color:#4a90d9;">' + (BUD[budget]||'Standard') + '</span>';
-  h += '</div></div>';
-
-  // BEREITS VORHANDEN
-  if (hatBestehendes) {
-    h += '<div class="bereits-vorhanden">';
-    h += '<div class="bereits-titel">Bereits eingenommen – aus Empfehlung entfernt</div>';
-    h += '<div class="bereits-items">';
-    vor.forEach(function(k){ if(k!=='A') h += '<span class="bereits-item">' + (VOR[k]||k) + '</span>'; });
-    h += '</div></div>';
+  if (w) {
+    if (alter === 'A') return '👧';
+    if (alter === 'B' || alter === 'C') return '👩';
+    if (alter === 'D') return '👩‍🦱';
+    return '👩‍🦳';
+  } else {
+    if (alter === 'A') return '👦';
+    if (alter === 'B' || alter === 'C') return '👨';
+    if (alter === 'D') return '👨‍🦱';
+    return '👨‍🦳';
   }
-
-  // KOSTEN-ÜBERSICHT
-  h += '<div class="kosten-box">';
-  h += '<div class="kosten-titel">Kosten-Übersicht</div>';
-  var essential = empfehlungen.filter(function(e){return e.prioritaet==='essential';});
-  var empfohlen = empfehlungen.filter(function(e){return e.prioritaet==='empfohlen';});
-  var optional  = empfehlungen.filter(function(e){return e.prioritaet==='optional';});
-
-  var preisEss = 0, preisEmp = 0, preisOpt = 0;
-  essential.forEach(function(e){ var p=waehleProdukt(e.id,budget); if(p) preisEss+=parseFloat(p.preis.replace(',','.')); });
-  empfohlen.forEach(function(e){ var p=waehleProdukt(e.id,budget); if(p) preisEmp+=parseFloat(p.preis.replace(',','.')); });
-  optional.forEach(function(e){  var p=waehleProdukt(e.id,budget); if(p) preisOpt+=parseFloat(p.preis.replace(',','.')); });
-
-  h += '<div class="kosten-zeile"><span class="kosten-label">🟠 Essentials (' + essential.length + ')</span><span class="kosten-wert">~' + preisEss.toFixed(0) + ' €</span></div>';
-  if (empfohlen.length) h += '<div class="kosten-zeile"><span class="kosten-label">🔵 Empfohlen (' + empfohlen.length + ')</span><span class="kosten-wert">~' + preisEmp.toFixed(0) + ' €</span></div>';
-  if (optional.length)  h += '<div class="kosten-zeile"><span class="kosten-label">🟢 Optional (' + optional.length + ')</span><span class="kosten-wert">~' + preisOpt.toFixed(0) + ' €</span></div>';
-  h += '<div class="kosten-zeile"><span class="kosten-label" style="font-weight:700;color:#1a1612;">Gesamt / Monat</span><span class="kosten-gesamt">~' + gesamtPreis.toFixed(0) + ' €</span></div>';
-  h += '</div>';
-
-  // SUPPLEMENT-KARTEN
-  h += '<div class="sektion-titel">Deine Supplement-Zusammenstellung</div>';
-
-  empfehlungen.forEach(function(e) {
-    var prod = waehleProdukt(e.id, budget);
-    if (!prod) return;
-
-    var katClass = e.kategorie === 'performance' ? 'primaer' : e.kategorie === 'wellbeing' ? 'sekundaer' : 'gesundheit';
-    var ikonClass = e.kategorie === 'performance' ? 'orange' : e.kategorie === 'wellbeing' ? 'blau' : 'gruen';
-    var dosis = berechneDosis(e.id, a);
-
-    var prioLabel = e.prioritaet === 'essential' ? 'Essentiell' : e.prioritaet === 'empfohlen' ? 'Empfohlen' : 'Optional';
-
-    h += '<div class="supp-karte ' + katClass + '">';
-    h += '<span class="supp-prioritaet ' + e.prioritaet + '">' + prioLabel + '</span>';
-    h += '<div class="supp-kopf">';
-    h += '<div class="supp-ikon ' + ikonClass + '">' + e.ikon + '</div>';
-    h += '<div><div class="supp-name">' + e.name + '</div><div class="supp-warum">' + e.warum + '</div></div>';
-    h += '</div>';
-
-    // Warum genau für diesen User
-    h += '<div class="supp-fit-grund">' + e.fit_grund + '</div>';
-
-    // Einnahme
-    h += '<div class="supp-einnahme">';
-    h += '<span class="supp-einnahme-zeit">' + dosis.zeit + '</span>';
-    h += '<span class="supp-einnahme-dosis">' + dosis.dosis + '</span>';
-    h += '</div>';
-
-    // Produktempfehlung
-    h += '<div class="supp-produkt">';
-    h += '<div class="supp-produkt-kopf">';
-    h += '<div><div class="supp-produkt-marke">' + prod.marke + '</div><div class="supp-produkt-name">' + prod.name + '</div></div>';
-    h += '<div style="text-align:right;"><div class="supp-produkt-preis">' + prod.preis + ' €</div><div class="supp-produkt-rating">' + prod.rating + '</div></div>';
-    h += '</div>';
-    h += '<div class="supp-produkt-tags">';
-    prod.tags.forEach(function(t){ h += '<span class="supp-produkt-tag">' + t + '</span>'; });
-    h += '<span class="supp-produkt-tag highlight">' + prod.position + '</span>';
-    h += '</div>';
-    h += '<button class="btn-shop-klein tipp" data-prod="' + prod.name + '" data-marke="' + prod.marke + '">Zum Shop: ' + prod.marke + ' →</button>';
-    h += '</div>'; // /supp-produkt
-    h += '</div>'; // /supp-karte
-  });
-
-  // EINNAHMEPLAN
-  if (plan.length > 0) {
-    h += '<div class="plan-section">';
-    h += '<div class="plan-titel">Dein Einnahmeplan</div>';
-    h += '<div class="plan-sub">Wann du was nimmst – für optimale Wirksamkeit</div>';
-    plan.forEach(function(slot) {
-      h += '<div class="plan-slot">';
-      h += '<div class="plan-zeit-zeile"><div class="plan-punkt"></div><div class="plan-zeit">' + slot.zeit + '</div></div>';
-      h += '<div class="plan-items">';
-      slot.items.forEach(function(item) {
-        h += '<div class="plan-item"><span class="plan-name">' + item.name + '</span><span class="plan-dosis">' + item.dosis + '</span></div>';
-      });
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-
-  // TRUST + DISCLAIMER
-  h += '<div class="karte" style="text-align:center;">';
-  h += '<div class="trust-zeile">';
-  h += '<div class="trust">Evidenzbasiert</div>';
-  h += '<div class="trust">Echte Produkte</div>';
-  h += '<div class="trust">Personalisiert</div>';
-  h += '</div>';
-  h += '<div class="disclaimer">Keine medizinischen Diagnosen. Diese Empfehlungen ersetzen keine ärztliche Beratung. Bei gesundheitlichen Fragen bitte einen Arzt konsultieren.</div>';
-  h += '</div>';
-
-  h += '<div style="height:14px;"></div>';
-  h += '<div style="text-align:center;">';
-  h += '<button class="btn-ghost tipp" id="btn-reset-erg">↺ Neu starten</button>';
-  h += '</div>';
-
-  document.getElementById('s-ergebnis').innerHTML = h;
-  zeige('s-ergebnis');
-
-  // Shop-Buttons binden
-  var shopBtns = document.querySelectorAll('.btn-shop-klein');
-  for (var i = 0; i < shopBtns.length; i++) {
-    (function(btn) {
-      btn.addEventListener('click', function() {
-        var prod = btn.getAttribute('data-prod');
-        var marke = btn.getAttribute('data-marke');
-        toast(marke + ': ' + prod + ' – Shop-URL folgt');
-      });
-    })(shopBtns[i]);
-  }
-
-  var btnReset = document.getElementById('btn-reset-erg');
-  if (btnReset) btnReset.addEventListener('click', function(){ resetApp(); });
 }
 
-// ===== FRAGEN-QUEUE =====
+// ── FRAGEN ──
 function initQueue() {
   fQueue = [
-    { id:'intro', typ:'choice', tag:'Schritt 1', frage:'Wie alt bist du?', hint:'Beeinflusst Vitamin-D, Kollagen und Dosierungsempfehlungen.',
-      opts:[{k:'A',l:'Unter 18 Jahre'},{k:'B',l:'18–25 Jahre'},{k:'C',l:'26–35 Jahre'},{k:'D',l:'36–45 Jahre'},{k:'E',l:'Über 45 Jahre'}] },
-    { id:'geschlecht', typ:'choice', tag:'Schritt 2', frage:'Biologisches Geschlecht?', hint:'Relevant für Eisen, Magnesium und spezifische Supplement-Empfehlungen.',
+    { id:'intro', typ:'choice', tag:'Schritt 1', frage:'Wie alt bist du?', hint:'Beeinflusst Vitamin-D, Kollagen und Dosierungen.',
+      opts:[{k:'A',l:'Unter 18'},{k:'B',l:'18–25'},{k:'C',l:'26–35'},{k:'D',l:'36–45'},{k:'E',l:'Über 45'}] },
+    { id:'geschlecht', typ:'choice', tag:'Schritt 2', frage:'Biologisches Geschlecht?', hint:'Relevant für Eisen, Magnesium und Dosierungen.',
       opts:[{k:'A',l:'Männlich'},{k:'B',l:'Weiblich'},{k:'C',l:'Keine Angabe'}] },
-    { id:'groesse', typ:'nummer', tag:'Schritt 3', frage:'Wie groß bist du?', hint:'Für BMI und Dosierungsberechnung.', einheit:'cm', min:140, max:220, std:175 },
-    { id:'gewicht', typ:'nummer', tag:'Schritt 4', frage:'Wie viel wiegst du?', hint:'Grundlage für exakte Proteindosierung (Tagesziel = kg × 1,6–2,0).', einheit:'kg', min:40, max:200, std:75 },
-    { id:'training', typ:'choice', tag:'Schritt 5', frage:'Deine Trainingsform?', hint:'Bestimmt welche Supplements wirklich sinnvoll sind.',
-      opts:[{k:'A',l:'Krafttraining 4+× / Woche'},{k:'B',l:'Krafttraining 2–3× / Woche'},{k:'C',l:'Hauptsächlich Cardio'},{k:'D',l:'Mix aus Kraft & Cardio'},{k:'E',l:'Wenig / kein Sport'}] },
-    { id:'erfahrung', typ:'choice', tag:'Schritt 6', frage:'Deine Trainingserfahrung?', hint:'Einsteiger brauchen weniger komplexe Stacks als Profis.',
-      opts:[{k:'einsteiger',l:'Einsteiger (< 1 Jahr)'},{k:'fortgeschritten',l:'Fortgeschritten (1–3 Jahre)'},{k:'profi',l:'Profi (> 3 Jahre, intensiv)'}] },
-    { id:'ziele', typ:'multi', tag:'Schritt 7', frage:'Deine Ziele?', hint:'Mehrfachauswahl – bestimmt welche Supplements du brauchst.',
-      opts:[{k:'A',l:'💪 Muskelaufbau'},{k:'B',l:'🔥 Fettabbau'},{k:'C',l:'⚡ Mehr Energie'},{k:'D',l:'🏃 Ausdauer'},{k:'E',l:'😴 Regeneration'},{k:'F',l:'❤️ Allg. Gesundheit'}] },
-    { id:'ernaehrung', typ:'choice', tag:'Schritt 8', frage:'Deine Ernährungsweise?', hint:'Veganer haben anderen Supplement-Bedarf (B12, pflanzl. Omega-3 etc.).',
-      opts:[{k:'A',l:'Alles (Omnivor)'},{k:'B',l:'Flexitarisch'},{k:'C',l:'Vegetarisch'},{k:'D',l:'Vegan'}] },
-    { id:'budget', typ:'choice', tag:'Schritt 9', frage:'Dein Budget?', hint:'Bestimmt welche Marken und Produkte empfohlen werden.',
-      opts:[{k:'sparpaket',l:'💰 Budget – günstigste gute Option'},{k:'standard',l:'⚖️ Preis-Leistung – bestes Verhältnis'},{k:'premium',l:'⭐ Premium – höchste Qualität'}] },
-    { id:'vorhanden', typ:'multi', tag:'Schritt 10', frage:'Was nimmst du bereits?', hint:'Diese Supplements werden aus deiner Empfehlung herausgenommen.', exkl:'A',
-      opts:[{k:'A',l:'❌ Noch nichts'},{k:'B',l:'Protein'},{k:'C',l:'Kreatin'},{k:'D',l:'Vitamin D'},{k:'E',l:'Omega-3'},{k:'F',l:'Magnesium'},{k:'G',l:'Vitamin B12'},{k:'H',l:'Sonstiges'}] },
+    { id:'groesse', typ:'nummer', tag:'Schritt 3', frage:'Wie groß bist du?', hint:'Basis für BMI-Berechnung.', einheit:'cm', min:140, max:220, std:175 },
+    { id:'gewicht', typ:'nummer', tag:'Schritt 4', frage:'Wie viel wiegst du?', hint:'Grundlage für exakte Proteindosierung.', einheit:'kg', min:40, max:200, std:75 },
+    { id:'training', typ:'choice', tag:'Schritt 5', frage:'Deine Trainingsform?', hint:'Bestimmt deinen Supplement-Bedarf.',
+      opts:[{k:'A',l:'Kraft 4+×/Woche'},{k:'B',l:'Kraft 2–3×/Woche'},{k:'C',l:'Hauptsächlich Cardio'},{k:'D',l:'Mix'},{k:'E',l:'Wenig Sport'}] },
+    { id:'erfahrung', typ:'choice', tag:'Schritt 6', frage:'Deine Erfahrung?', hint:'Einsteiger brauchen einfachere Stacks.',
+      opts:[{k:'einsteiger',l:'Einsteiger (< 1 Jahr)'},{k:'fortgeschritten',l:'Fortgeschritten (1–3 J.)'},{k:'profi',l:'Profi (> 3 Jahre)'}] },
+    { id:'ziele', typ:'multi', tag:'Schritt 7', frage:'Deine Ziele?', hint:'Mehrfachauswahl möglich.',
+      opts:[{k:'A',l:'💪 Muskelaufbau'},{k:'B',l:'🔥 Fettabbau'},{k:'C',l:'⚡ Mehr Energie'},{k:'D',l:'🏃 Ausdauer'},{k:'E',l:'😴 Regeneration'},{k:'F',l:'❤️ Gesundheit'}] },
+    { id:'ernaehrung', typ:'choice', tag:'Schritt 8', frage:'Deine Ernährungsweise?', hint:'Veganer brauchen andere Produkte.',
+      opts:[{k:'A',l:'Alles'},{k:'B',l:'Flexitarisch'},{k:'C',l:'Vegetarisch'},{k:'D',l:'Vegan'}] },
+    { id:'unvertraeglichkeiten', typ:'multi', tag:'Schritt 9', frage:'Unverträglichkeiten?', hint:'Beeinflusst Produktauswahl.', exkl:'A',
+      opts:[{k:'A',l:'Keine'},{k:'B',l:'Laktoseintoleranz'},{k:'C',l:'Fischallergie'},{k:'D',l:'Glutenunverträglichkeit'},{k:'E',l:'Sojaallerg­ie'}] },
+    { id:'medikamente', typ:'multi', tag:'Schritt 10', frage:'Medikamente oder Erkrankungen?', hint:'Wichtig für deine Sicherheit.', exkl:'A',
+      opts:[{k:'A',l:'Keine'},{k:'B',l:'Blutverdünner'},{k:'C',l:'Schilddrüsenerkrankung'},{k:'D',l:'Bluthochdruck'},{k:'E',l:'Nierenerkrankung'},{k:'F',l:'Diabetes'},{k:'G',l:'Antidepressiva'}] },
+    { id:'situation', typ:'choice', tag:'Schritt 11', frage:'Besondere Situation?', hint:'Schwangerschaft erfordert spezifische Supplements.',
+      opts:[{k:'A',l:'Keine'},{k:'B',l:'🤰 Schwanger/Stillzeit'},{k:'C',l:'🌸 Wechseljahre'},{k:'D',l:'😴 Starke Schlafprobleme'}] },
   ];
 }
 
-// ===== SCREEN-STEUERUNG =====
-function zeige(id) {
-  var all = document.querySelectorAll('.screen');
-  for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
-  var el = document.getElementById(id);
-  if (el) { el.classList.add('on'); window.scrollTo(0, 0); }
-}
-
+// ── QUIZ ──
 function zeigeQuiz() {
   qIdx = 0; multiSel = []; initQueue();
-  zeige('s-quiz');
-  renderFrage();
+  zeige('s-quiz'); renderFrage();
 }
 
-// ===== QUIZ RENDERN =====
 function renderFrage() {
   var f = fQueue[qIdx];
   var tot = fQueue.length;
-  var pct = Math.round((qIdx / tot) * 100);
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-txt').textContent = qIdx + ' / ' + tot;
+  document.getElementById('prog').style.width = Math.round((qIdx/tot)*100)+'%';
+  document.getElementById('prog-txt').textContent = qIdx+' / '+tot;
   multiSel = [];
-
-  var h = '<div class="quiz-tag">' + (f.tag || 'Schritt') + '</div>';
-  h += '<div class="quiz-q">' + f.frage + '</div>';
-  h += '<div class="quiz-hint">' + (f.hint || '') + '</div>';
-
+  var h = '<div class="quiz-tag">'+f.tag+'</div>';
+  h += '<div class="quiz-q">'+f.frage+'</div>';
+  h += '<div class="quiz-hint">'+(f.hint||'')+'</div>';
   if (f.typ === 'choice') {
-    var cls = f.opts.length <= 3 ? 'aw-liste' : 'aw-liste zwei';
-    h += '<div class="' + cls + '" id="aw-container">';
-    for (var i = 0; i < f.opts.length; i++) {
-      var o = f.opts[i];
-      var vorhin = AW[f.id] === o.k ? ' gewaehlt' : '';
-      h += '<button class="aw-btn tipp' + vorhin + '" data-typ="choice" data-k="' + o.k + '">';
-      h += '<span class="aw-key">' + (i+1) + '</span>';
-      h += '<span>' + o.l + '</span>';
-      h += '<span class="aw-haken">&#10003;</span>';
-      h += '</button>';
+    var cls = f.opts.length <= 3 ? 'aw-list' : 'aw-list grid2';
+    h += '<div class="'+cls+'" id="aw-c">';
+    for (var i=0;i<f.opts.length;i++) {
+      var o=f.opts[i], sel=AW[f.id]===o.k?' sel':'';
+      h += '<button class="aw-btn tipp'+sel+'" data-t="choice" data-k="'+o.k+'"><span class="aw-key">'+(i+1)+'</span><span>'+o.l+'</span><span class="aw-check">✓</span></button>';
     }
-    h += '</div>';
-    h += '<div class="quiz-nav"><button class="btn-ghost tipp" id="btn-zurueck">← Zurück</button></div>';
+    h += '</div><div class="quiz-nav"><button class="btn-ghost" id="btn-z">← Zurück</button></div>';
   }
-
   if (f.typ === 'multi') {
-    h += '<div class="aw-liste" id="aw-container">';
-    for (var i = 0; i < f.opts.length; i++) {
-      var o = f.opts[i];
-      h += '<button class="aw-btn tipp" data-typ="multi" data-k="' + o.k + '" data-exkl="' + (f.exkl||'') + '">';
-      h += '<span class="aw-key">' + (i+1) + '</span>';
-      h += '<span>' + o.l + '</span>';
-      h += '<span class="aw-haken">&#10003;</span>';
-      h += '</button>';
+    h += '<div class="aw-list" id="aw-c">';
+    for (var i=0;i<f.opts.length;i++) {
+      var o=f.opts[i];
+      h += '<button class="aw-btn tipp" data-t="multi" data-k="'+o.k+'" data-ex="'+(f.exkl||'')+'"><span class="aw-key">'+(i+1)+'</span><span>'+o.l+'</span><span class="aw-check">✓</span></button>';
     }
-    h += '</div>';
-    h += '<div class="quiz-nav"><button class="btn-ghost tipp" id="btn-zurueck">← Zurück</button><button class="btn-haupt-auto tipp" id="btn-weiter">Weiter →</button></div>';
+    h += '</div><div class="quiz-nav"><button class="btn-ghost" id="btn-z">← Zurück</button><button class="btn-primary" id="btn-w" style="width:auto;padding:12px 24px;font-size:14px;">Weiter →</button></div>';
   }
-
   if (f.typ === 'nummer') {
-    h += '<div class="num-wrap"><input type="number" class="num-inp" id="num-inp" min="' + f.min + '" max="' + f.max + '" value="' + f.std + '" inputmode="numeric"><span class="num-einheit">' + f.einheit + '</span></div>';
-    h += '<div class="quiz-nav"><button class="btn-ghost tipp" id="btn-zurueck">← Zurück</button><button class="btn-haupt-auto tipp" id="btn-weiter">Weiter →</button></div>';
+    h += '<div class="num-wrap"><input type="number" class="num-inp" id="num-inp" min="'+f.min+'" max="'+f.max+'" value="'+f.std+'" inputmode="numeric"><span class="num-unit">'+f.einheit+'</span></div>';
+    h += '<div class="quiz-nav"><button class="btn-ghost" id="btn-z">← Zurück</button><button class="btn-primary" id="btn-w" style="width:auto;padding:12px 24px;font-size:14px;">Weiter →</button></div>';
   }
-
   document.getElementById('quiz-box').innerHTML = h;
-  bindQuizEvents(f);
+  bindQuiz(f);
 }
 
-function bindQuizEvents(f) {
-  var btnZ = document.getElementById('btn-zurueck');
-  if (btnZ) btnZ.addEventListener('click', function() {
-    if (qIdx > 0) { qIdx--; renderFrage(); } else { zeige('s-start'); }
-  });
-
-  var btnW = document.getElementById('btn-weiter');
-  if (btnW) btnW.addEventListener('click', function() {
-    if (f.typ === 'multi') {
-      if (multiSel.length === 0) { toast('Bitte wähle mindestens eine Option.'); return; }
-      AW[f.id] = multiSel.slice();
-    } else if (f.typ === 'nummer') {
-      var v = document.getElementById('num-inp').value;
-      if (!v || parseFloat(v) < f.min || parseFloat(v) > f.max) { toast('Bitte ' + f.min + '–' + f.max + ' eingeben.'); return; }
-      AW[f.id] = v;
+function bindQuiz(f) {
+  var bz = document.getElementById('btn-z');
+  if (bz) bz.addEventListener('click', function(){ if(qIdx>0){qIdx--;renderFrage();}else zeige('s-start'); });
+  var bw = document.getElementById('btn-w');
+  if (bw) bw.addEventListener('click', function(){
+    if (f.typ==='multi') {
+      if (!multiSel.length){toast('Bitte wähle mindestens eine Option.');return;}
+      AW[f.id]=multiSel.slice();
+    } else if (f.typ==='nummer') {
+      var v=document.getElementById('num-inp').value;
+      if (!v||parseFloat(v)<f.min||parseFloat(v)>f.max){toast('Bitte '+f.min+'–'+f.max+' eingeben.');return;}
+      AW[f.id]=v;
     }
     naechste();
   });
-
-  var container = document.getElementById('aw-container');
-  if (container) {
-    var btns = container.querySelectorAll('.aw-btn');
-    for (var i = 0; i < btns.length; i++) {
-      (function(btn) {
-        btn.addEventListener('click', function() {
-          var typ  = btn.getAttribute('data-typ');
-          var k    = btn.getAttribute('data-k');
-          var exkl = btn.getAttribute('data-exkl');
-
-          if (typ === 'choice') {
-            var alle = container.querySelectorAll('.aw-btn');
-            for (var j = 0; j < alle.length; j++) alle[j].classList.remove('gewaehlt');
-            btn.classList.add('gewaehlt');
-            AW[f.id] = k;
-            setTimeout(function() { naechste(); }, 270);
+  var ac=document.getElementById('aw-c');
+  if (!ac) return;
+  var btns=ac.querySelectorAll('.aw-btn');
+  for (var i=0;i<btns.length;i++) {
+    (function(btn){
+      btn.addEventListener('click',function(){
+        var t=btn.getAttribute('data-t'),k=btn.getAttribute('data-k'),ex=btn.getAttribute('data-ex');
+        if (t==='choice'){
+          for(var j=0;j<btns.length;j++)btns[j].classList.remove('sel');
+          btn.classList.add('sel'); AW[f.id]=k;
+          setTimeout(naechste,260);
+        } else {
+          if(ex&&k===ex){for(var j=0;j<btns.length;j++)btns[j].classList.remove('sel');multiSel=[k];btn.classList.add('sel');}
+          else {
+            if(ex){for(var j=0;j<btns.length;j++){if(btns[j].getAttribute('data-k')===ex)btns[j].classList.remove('sel');}multiSel=multiSel.filter(function(x){return x!==ex;});}
+            if(btn.classList.contains('sel')){btn.classList.remove('sel');multiSel=multiSel.filter(function(x){return x!==k;});}
+            else{btn.classList.add('sel');multiSel.push(k);}
           }
-
-          if (typ === 'multi') {
-            if (exkl && k === exkl) {
-              var alle2 = container.querySelectorAll('.aw-btn');
-              for (var j = 0; j < alle2.length; j++) alle2[j].classList.remove('gewaehlt');
-              multiSel = [k]; btn.classList.add('gewaehlt');
-            } else {
-              if (exkl) {
-                var exBtn = null;
-                var alle3 = container.querySelectorAll('.aw-btn');
-                for (var j = 0; j < alle3.length; j++) { if (alle3[j].getAttribute('data-k') === exkl) exBtn = alle3[j]; }
-                if (exBtn) exBtn.classList.remove('gewaehlt');
-                multiSel = multiSel.filter(function(x){ return x !== exkl; });
-              }
-              if (btn.classList.contains('gewaehlt')) {
-                btn.classList.remove('gewaehlt');
-                multiSel = multiSel.filter(function(x){ return x !== k; });
-              } else {
-                btn.classList.add('gewaehlt');
-                multiSel.push(k);
-              }
-            }
-          }
-        });
-      })(btns[i]);
-    }
+        }
+      });
+    })(btns[i]);
   }
 }
 
 function naechste() {
   qIdx++;
-  if (qIdx >= fQueue.length) { zeige('s-login'); }
-  else { renderFrage(); }
+  if (qIdx>=fQueue.length) zeige('s-login');
+  else renderFrage();
 }
 
-// ===== TOAST =====
-function toast(msg) {
-  var t = document.getElementById('toast-el');
-  t.textContent = msg; t.classList.add('zeigen');
-  setTimeout(function(){ t.classList.remove('zeigen'); }, 3000);
+// ── DOSIERUNGS-ENGINE ──
+function dosis(id, a) {
+  var kg=parseFloat(a.gewicht)||75,w=a.geschlecht==='B',ki=a.training==='A',tr=a.training!=='E';
+  var mu=(a.ziele||[]).indexOf('A')>=0;
+  var pb=mu&&ki?Math.round(kg*2):mu?Math.round(kg*1.8):tr?Math.round(kg*1.6):Math.round(kg*1.2);
+  var pp=w?'20–25 g':'25–35 g',kd=kg<=70?'3 g':'5 g';
+  var md=w?(ki?'300 mg':'250 mg'):(ki?'400 mg':'350 mg');
+  var vd=(a.intro==='D'||a.intro==='E')?'2.000–4.000 IE':'1.000–2.000 IE';
+  var od=tr?'2–3 g EPA/DHA':'1–2 g EPA/DHA';
+  var M={
+    'whey_protein':          {d:pp+' (Ziel: '+pb+' g)',        z:'Nach dem Training'},
+    'iso_clear':             {d:pp+' (Ziel: '+pb+' g)',        z:'Nach dem Training'},
+    'pflanzenprotein':       {d:pp+' (Ziel: '+pb+' g)',        z:'Nach dem Training'},
+    'kreatin':               {d:kd+' täglich',                  z:'Täglich – egal wann'},
+    'magnesium':             {d:md,                             z:'Abends vor dem Schlafen'},
+    'omega3':                {d:od,                             z:'Zu einer Mahlzeit'},
+    'omega3_vegan':          {d:od,                             z:'Zu einer Mahlzeit'},
+    'vitamin_d3':            {d:vd+' D3 + 100µg K2',           z:'Morgens zum Frühstück'},
+    'vitamin_b12':           {d:'500µg Methylcobalamin',        z:'Morgens nüchtern'},
+    'eisen':                 {d:(w?'18':'10')+' mg Bisglycinat',z:'Morgens nüchtern'},
+    'ashwagandha':           {d:'300–600 mg',                   z:'Abends vor dem Schlafen'},
+    'l_carnitin':            {d:'1.500–2.000 mg',               z:'Vor dem Training'},
+    'beta_alanin':           {d:'3.200 mg',                     z:'Vor dem Training'},
+    'elektrolyte':           {d:'1 Portion',                    z:'Während dem Training'},
+    'vitamin_c':             {d:'500–1.000 mg',                 z:'Morgens zum Frühstück'},
+    'zink':                  {d:'15 mg',                        z:'Abends'},
+    'kollagen':              {d:'10 g',                         z:'Morgens nüchtern'},
+    'eaas':                  {d:'10–15 g',                      z:'Während dem Training'},
+    'l_glutamin':            {d:'5 g',                          z:'Nach dem Training'},
+    'multivitamin':          {d:'1 Kapsel',                     z:'Morgens zum Frühstück'},
+    'zma':                   {d:'1 Portion',                    z:'Abends vor dem Schlafen'},
+    'pre_workout':           {d:'1 Portion vor Training',       z:'Vor dem Training'},
+  };
+  return M[id]||{d:'Laut Produktangabe',z:'Täglich'};
 }
 
-// ===== RESET =====
-function resetApp() {
-  AW = {}; NP = { name:'', email:'' };
-  qIdx = 0; multiSel = []; initQueue();
-  zeige('s-start'); toast('App zurückgesetzt.');
+// ── PRODUKT-DATENBANK MIT ALTERNATIVEN ──
+var DB = {
+  'whey_protein': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Whey Zero',preis:'34,90',rating:'4.7 ★',tags:['25g Protein','Isolat','Laktosefrei']},
+    alternativen: [
+      {marke:'Myprotein',name:'Impact Whey Protein',preis:'24,99',rating:'4.6 ★',tags:['21g Protein','Günstigster Einstieg']},
+      {marke:'ESN',name:'Designer Whey',preis:'34,90',rating:'4.8 ★',tags:['24g Protein','Bester Geschmack DACH']},
+    ]
+  },
+  'iso_clear': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Iso Whey Zero Clear',preis:'30,90',rating:'4.8 ★',tags:['86g/100g','Laktosefrei','42k Reviews']},
+    alternativen: [
+      {marke:'Myprotein',name:'Clear Whey Isolate',preis:'31,99',rating:'4.5 ★',tags:['20g Protein','Fruchtgeschmack']},
+      {marke:'ESN',name:'IsoClear Whey Isolate',preis:'54,90',rating:'4.6 ★',tags:['83g/100g','DACH Premium']},
+    ]
+  },
+  'pflanzenprotein': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Vegan Protein',preis:'28,90',rating:'4.5 ★',tags:['25g Protein','Erbse+Reis','EU']},
+    alternativen: [
+      {marke:'Myprotein',name:'THE Plant Protein',preis:'24,99',rating:'4.4 ★',tags:['21g Protein','Günstig']},
+      {marke:'ESN',name:'Vegan Designer Protein',preis:'34,90',rating:'4.6 ★',tags:['Vollständig','DACH Premium']},
+    ]
+  },
+  'kreatin': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Creatine Monohydrate',preis:'14,90',rating:'4.6 ★',tags:['≥99,5% Reinheit','EU-Produktion']},
+    alternativen: [
+      {marke:'Myprotein',name:'Creatine Monohydrate',preis:'18,99',rating:'4.7 ★',tags:['Informed Sport','13.000 Reviews']},
+      {marke:'ESN',name:'Creatine (Creapure®)',preis:'29,90',rating:'4.8 ★',tags:['≥99,9% Reinheit','Creapure® Zertifiziert']},
+    ]
+  },
+  'magnesium': {
+    hauptprodukt: {marke:'ESN',name:'Magnesium Bisglycinat',preis:'19,90',rating:'4.7 ★',tags:['300mg elementar','Bisglycinat','Informed Sport']},
+    alternativen: [
+      {marke:'Myprotein',name:'Magnesium Bisglycinate',preis:'12,99',rating:'4.5 ★',tags:['375mg/Portion','Günstig']},
+      {marke:'Norsan',name:'Magnesium Bisglycinat',preis:'24,90',rating:'4.7 ★',tags:['Albion Chelat','Max. Bioverfügbarkeit']},
+    ]
+  },
+  'omega3': {
+    hauptprodukt: {marke:'ESN',name:'Omega-3',preis:'19,90',rating:'4.6 ★',tags:['360mg EPA','240mg DHA','Informed Sport']},
+    alternativen: [
+      {marke:'Myprotein',name:'Omega-3',preis:'12,99',rating:'4.5 ★',tags:['270mg EPA','180mg DHA','Günstig']},
+      {marke:'Norsan',name:'Omega-3 Total (flüssig)',preis:'29,90',rating:'4.8 ★',tags:['IFOS 5★','1050mg EPA','Flüssig']},
+    ]
+  },
+  'omega3_vegan': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Vegan Omega-3',preis:'14,90',rating:'4.5 ★',tags:['Algenöl','EPA+DHA','Vegan']},
+    alternativen: [
+      {marke:'Myprotein',name:'Vegan Omega-3',preis:'16,99',rating:'4.4 ★',tags:['Algenöl','Günstig']},
+      {marke:'Norsan',name:'Norsan Vegan Omega-3',preis:'34,90',rating:'4.8 ★',tags:['IFOS 5★','Premium Algenöl']},
+    ]
+  },
+  'vitamin_d3': {
+    hauptprodukt: {marke:'ESN',name:'Vitamin D3 + K2',preis:'19,90',rating:'4.7 ★',tags:['2000 IE D3','80µg K2 MK-7','Depot-Effekt']},
+    alternativen: [
+      {marke:'Myprotein',name:'Vitamin D3 + K2',preis:'9,99',rating:'4.5 ★',tags:['1000 IE D3','45µg K2','Günstig']},
+      {marke:'Norsan',name:'Vitamin D3+K2 Drops',preis:'22,90',rating:'4.7 ★',tags:['Flüssig','MCT-Öl','Max. Aufnahme']},
+    ]
+  },
+  'vitamin_b12': {
+    hauptprodukt: {marke:'ESN',name:'Vitamin B12 Methylcobalamin',preis:'14,90',rating:'4.7 ★',tags:['500µg','Methylcobalamin','DACH']},
+    alternativen: [
+      {marke:'Myprotein',name:'Vitamin B12',preis:'8,99',rating:'4.5 ★',tags:['Methylcobalamin','Günstig']},
+      {marke:'BioTechUSA',name:'Vitamin B12',preis:'9,90',rating:'4.6 ★',tags:['EU-Produktion','Informed Sport']},
+    ]
+  },
+  'eisen': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Iron + Vitamin C',preis:'9,90',rating:'4.5 ★',tags:['14mg Eisen','+ Vitamin C','Bessere Aufnahme']},
+    alternativen: [
+      {marke:'Myprotein',name:'Iron Bisglycinate',preis:'11,99',rating:'4.4 ★',tags:['14mg Bisglycinat','Magenfreundlich']},
+      {marke:'Thorne',name:'Iron Bisglycinate',preis:'24,90',rating:'4.8 ★',tags:['NSF zertifiziert','Höchste Reinheit']},
+    ]
+  },
+  'ashwagandha': {
+    hauptprodukt: {marke:'ESN',name:'Ashwagandha KSM-66',preis:'22,90',rating:'4.7 ★',tags:['600mg KSM-66','≥5% Withanolide','Informed Sport']},
+    alternativen: [
+      {marke:'Myprotein',name:'Ashwagandha',preis:'12,99',rating:'4.5 ★',tags:['600mg Wurzelextrakt','Günstig']},
+      {marke:'Thorne',name:'Ashwagandha (Sensoril)',preis:'34,90',rating:'4.8 ★',tags:['10% Withanolide','NSF zertifiziert']},
+    ]
+  },
+  'l_carnitin': {
+    hauptprodukt: {marke:'BioTechUSA',name:'L-Carnitine + Chrome',preis:'12,90',rating:'4.5 ★',tags:['1000mg','+ Chrom','EU-Produktion']},
+    alternativen: [
+      {marke:'Myprotein',name:'L-Carnitine',preis:'14,99',rating:'4.4 ★',tags:['1000mg Tartrat','Günstig']},
+      {marke:'ESN',name:'L-Carnitine',preis:'24,90',rating:'4.6 ★',tags:['2000mg','Hochdosiert','DACH']},
+    ]
+  },
+  'beta_alanin': {
+    hauptprodukt: {marke:'ESN',name:'Beta-Alanin',preis:'19,90',rating:'4.6 ★',tags:['3200mg CarnoSyn®','Patentiert','DACH']},
+    alternativen: [
+      {marke:'Myprotein',name:'Beta-Alanine',preis:'12,99',rating:'4.5 ★',tags:['3200mg','Günstig']},
+      {marke:'BioTechUSA',name:'Beta-Alanine',preis:'11,90',rating:'4.5 ★',tags:['Informed Sport','EU']},
+    ]
+  },
+  'elektrolyte': {
+    hauptprodukt: {marke:'ESN',name:'Electrolytes',preis:'19,90',rating:'4.6 ★',tags:['Vollständig','Kein Zucker','Informed Sport']},
+    alternativen: [
+      {marke:'Myprotein',name:'Electrolyte Powder',preis:'14,99',rating:'4.4 ★',tags:['Na+K+Mg+Ca','Günstig']},
+      {marke:'Olimp',name:'Iso Plus Professional',preis:'19,90',rating:'4.5 ★',tags:['+ Vitamine','Performance']},
+    ]
+  },
+  'vitamin_c': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Vitamin C 1000',preis:'8,90',rating:'4.6 ★',tags:['1000mg','+ Bioflavonoide','EU']},
+    alternativen: [
+      {marke:'Myprotein',name:'Vitamin C',preis:'7,99',rating:'4.6 ★',tags:['500mg','Günstig']},
+      {marke:'Thorne',name:'Vitamin C with Flavonoids',preis:'19,90',rating:'4.8 ★',tags:['NSF','+ Bioflavonoide']},
+    ]
+  },
+  'zink': {
+    hauptprodukt: {marke:'BioTechUSA',name:'Zinc Chelate',preis:'7,90',rating:'4.6 ★',tags:['15mg Chelat','Bessere Aufnahme','EU']},
+    alternativen: [
+      {marke:'Myprotein',name:'Zinc',preis:'6,99',rating:'4.5 ★',tags:['15mg Citrat','Günstig']},
+      {marke:'Thorne',name:'Zinc Picolinate',preis:'16,90',rating:'4.8 ★',tags:['NSF','Höchste Bioverfügbarkeit']},
+    ]
+  },
+  'kollagen': {
+    hauptprodukt: {marke:'Norsan',name:'Kollagen Peptide',preis:'34,90',rating:'4.8 ★',tags:['Weidehaltung','Typ I+III','10g/Portion']},
+    alternativen: [
+      {marke:'Myprotein',name:'Collagen Peptides',preis:'16,99',rating:'4.5 ★',tags:['10g Typ I','Günstig']},
+      {marke:'Weider',name:'Collagen + Vitamin C',preis:'19,90',rating:'4.5 ★',tags:['Typ I+III','+ Biotin']},
+    ]
+  },
+  'eaas': {
+    hauptprodukt: {marke:'ESN',name:'EAA Zero',preis:'29,90',rating:'4.7 ★',tags:['Alle 9 EAAs','7.5g EAA','DACH #1']},
+    alternativen: [
+      {marke:'Myprotein',name:'Essential BCAA 2:1:1',preis:'14,99',rating:'4.5 ★',tags:['6g BCAA','25k Reviews','Günstig']},
+      {marke:'BioTechUSA',name:'BCAA + Glutamine Zero',preis:'19,90',rating:'4.6 ★',tags:['6g BCAA + Glutamin']},
+    ]
+  },
+  'l_glutamin': {
+    hauptprodukt: {marke:'ESN',name:'L-Glutamine',preis:'19,90',rating:'4.6 ★',tags:['Pharmaqualität','Informed Sport','DACH']},
+    alternativen: [
+      {marke:'Myprotein',name:'Glutamine',preis:'11,99',rating:'4.5 ★',tags:['5g/Portion','Günstig']},
+      {marke:'BioTechUSA',name:'Glutamine',preis:'10,90',rating:'4.5 ★',tags:['EU-Produktion','Informed Sport']},
+    ]
+  },
+  'multivitamin': {
+    hauptprodukt: {marke:'Optimum Nutrition',name:'Opti-Men/Opti-Women',preis:'24,90',rating:'4.6 ★',tags:['75+ Zutaten','Männer+Frauen Version','Global Standard']},
+    alternativen: [
+      {marke:'Myprotein',name:'Daily Vitamins',preis:'9,99',rating:'4.5 ★',tags:['Vollständig','Günstig']},
+      {marke:'Thorne',name:'Basic Nutrients 2/Day',preis:'39,90',rating:'4.8 ★',tags:['NSF zertifiziert','Bioaktive Formen']},
+    ]
+  },
+  'zma': {
+    hauptprodukt: {marke:'ESN',name:'ZMA',preis:'19,90',rating:'4.7 ★',tags:['Bisglycinat-Form','Hochdosiert','DACH']},
+    alternativen: [
+      {marke:'Myprotein',name:'ZMA',preis:'12,99',rating:'4.4 ★',tags:['Zn+Mg+B6','Günstig']},
+      {marke:'BioTechUSA',name:'ZMA',preis:'11,90',rating:'4.5 ★',tags:['Klassisch','EU-Produktion']},
+    ]
+  },
+  'pre_workout': {
+    hauptprodukt: {marke:'ESN',name:'Crank Pre-Workout',preis:'34,90',rating:'4.7 ★',tags:['200mg Koffein','6g Citrullin','DACH #1']},
+    alternativen: [
+      {marke:'Myprotein',name:'THE Pre-Workout',preis:'24,99',rating:'4.5 ★',tags:['200mg Koffein','6g Citrullin','Günstig']},
+      {marke:'BioTechUSA',name:'Crash Pre-Workout',preis:'24,90',rating:'4.5 ★',tags:['300mg Koffein','Stärkster Stimulant']},
+    ]
+  },
+};
+
+// ── INGREDIENT OVERLAP MAP ──
+var INHALT = {
+  'whey_protein':['protein'],'iso_clear':['protein'],'pflanzenprotein':['protein'],
+  'kreatin':['kreatin'],'magnesium':['magnesium'],'omega3':['omega3'],'omega3_vegan':['omega3'],
+  'vitamin_d3':['vitamin_d3','vitamin_k2'],'vitamin_b12':['vitamin_b12'],'eisen':['eisen'],
+  'ashwagandha':['ashwagandha'],'l_carnitin':['l_carnitin'],'beta_alanin':['beta_alanin'],
+  'elektrolyte':['elektrolyte','magnesium_trace'],'vitamin_c':['vitamin_c'],'zink':['zink'],
+  'kollagen':['kollagen'],'eaas':['eaas'],'l_glutamin':['l_glutamin'],
+  'multivitamin':['vitamin_c','zink','vitamin_d3','vitamin_b12','eisen','magnesium_trace','multivitamin'],
+  'zma':['zink','magnesium','vitamin_b6'],'pre_workout':['koffein','beta_alanin','citrullin'],
+};
+
+function loesOverlaps(emps) {
+  var del = {};
+  // ZMA: wenn Mg + Zink einzeln schon da → ZMA raus
+  if (emps.some(function(e){return e.id==='zma';}) && emps.some(function(e){return e.id==='magnesium';}) && emps.some(function(e){return e.id==='zink';})) {
+    del['zma'] = 'Zink + Magnesium bereits separat empfohlen';
+  }
+  // Beta-Alanin + Pre-Workout
+  if (emps.some(function(e){return e.id==='beta_alanin';}) && emps.some(function(e){return e.id==='pre_workout';})) {
+    del['beta_alanin'] = 'Im Pre-Workout bereits enthalten';
+  }
+  var prio = {essential:0,empfohlen:1,optional:2};
+  for (var i=0;i<emps.length;i++) {
+    if (del[emps[i].id]) continue;
+    for (var j=i+1;j<emps.length;j++) {
+      if (del[emps[j].id]) continue;
+      var s1=INHALT[emps[i].id]||[],s2=INHALT[emps[j].id]||[];
+      var skip=['multivitamin','elektrolyte','magnesium_trace','multivitamin'];
+      for (var a=0;a<s1.length;a++) {
+        if (skip.indexOf(s1[a])>=0) continue;
+        for (var b=0;b<s2.length;b++) {
+          if (skip.indexOf(s2[b])>=0) continue;
+          if (s1[a]===s2[b]) {
+            if (prio[emps[i].prioritaet]<=prio[emps[j].prioritaet]) del[emps[j].id]='Wirkstoff bereits in '+emps[i].name+' enthalten';
+            else del[emps[i].id]='Wirkstoff bereits in '+emps[j].name+' enthalten';
+          }
+        }
+      }
+    }
+  }
+  return {
+    empfehlungen: emps.filter(function(e){return !del[e.id];}),
+    entfernt: emps.filter(function(e){return del[e.id];}).map(function(e){return {id:e.id,name:e.name,grund:del[e.id]};})
+  };
 }
 
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-  initQueue();
+// ── EMPFEHLUNGS-ENGINE ──
+function berechneEmpfehlungen(a) {
+  var z=a.ziele||[],vegan=a.ernaehrung==='D',w=a.geschlecht==='B';
+  var alter=a.intro,erfahrung=a.erfahrung||'einsteiger';
+  var kraft=a.training==='A'||a.training==='B',cardio=a.training==='C';
+  var mix=a.training==='D',wenig=a.training==='E';
+  var vorh=a.vorhanden||['A'],unvert=a.unvertraeglichkeiten||['A'],meds=a.medikamente||['A'];
+  var situation=a.situation||'A';
+  var mu=z.indexOf('A')>=0,fett=z.indexOf('B')>=0,energie=z.indexOf('C')>=0;
+  var ausd=z.indexOf('D')>=0,regen=z.indexOf('E')>=0,health=z.indexOf('F')>=0;
+  var hatLaktose=unvert.indexOf('B')>=0,hatFisch=unvert.indexOf('C')>=0;
+  var hatBlutverd=meds.indexOf('B')>=0,hatSchildd=meds.indexOf('C')>=0;
+  var hatBlutdr=meds.indexOf('D')>=0,hatNiere=meds.indexOf('E')>=0;
+  var hatDiab=meds.indexOf('F')>=0,hatAntiD=meds.indexOf('G')>=0;
+  var istSchwanger=situation==='B',istMeno=situation==='C',istSchlaf=situation==='D';
+  var hatProt=vorh.indexOf('B')>=0,hatKreat=vorh.indexOf('C')>=0;
+  var hatVitD=vorh.indexOf('D')>=0,hatO3=vorh.indexOf('E')>=0;
+  var hatMg=vorh.indexOf('F')>=0,hatB12=vorh.indexOf('G')>=0;
+  var E=[];
 
-  document.getElementById('btn-start').addEventListener('click', function() { zeigeQuiz(); });
-  document.getElementById('btn-reset').addEventListener('click', function() { resetApp(); });
+  if (istSchwanger) {
+    return [
+      {id:'vitamin_d3',prioritaet:'essential',kategorie:'gesundheit',name:'Vitamin D3',ikon:'☀️',fit_grund:'Essentiell für Knochenentwicklung des Kindes'},
+      {id:'omega3_vegan',prioritaet:'essential',kategorie:'gesundheit',name:'Omega-3 DHA',ikon:'🐟',fit_grund:'DHA für Gehirnentwicklung – Algenöl ist sicherste Quelle'},
+      {id:'magnesium',prioritaet:'empfohlen',kategorie:'gesundheit',name:'Magnesium',ikon:'🌙',fit_grund:'Gegen Wadenkrämpfe in der Schwangerschaft'},
+      {id:'vitamin_b12',prioritaet:vegan?'essential':'empfohlen',kategorie:'gesundheit',name:'Vitamin B12',ikon:'🧪',fit_grund:'Nervensystem-Entwicklung des Kindes'},
+    ];
+  }
 
-  document.getElementById('btn-login-save').addEventListener('click', function() {
-    NP.name  = document.getElementById('inp-name').value.trim()  || 'Nutzer';
-    NP.email = document.getElementById('inp-email').value.trim() || '';
-    zeigeErgebnis();
+  // ESSENTIALS
+  if (!hatVitD) E.push({id:'vitamin_d3',prioritaet:'essential',kategorie:'gesundheit',name:'Vitamin D3'+(hatBlutverd?' (nur D3!)':'+K2'),ikon:'☀️',fit_grund:hatBlutverd?'NUR D3 ohne K2 wegen Blutverdünner – bitte Arzt konsultieren':'Über 60% der Bevölkerung mangelhaft versorgt'});
+  if (!hatO3) { var o3=vegan||hatFisch?'omega3_vegan':'omega3'; E.push({id:o3,prioritaet:'essential',kategorie:'gesundheit',name:vegan||hatFisch?'Omega-3 Algenöl':'Omega-3',ikon:'🐟',fit_grund:hatFisch?'Algenöl wegen Fischallergie – identische EPA/DHA Wirkung':'Entzündungsreduktion + Herzgesundheit + Regeneration'}); }
+  if (!hatMg&&!wenig) E.push({id:'magnesium',prioritaet:'essential',kategorie:'gesundheit',name:'Magnesium Bisglycinat',ikon:'🌙',fit_grund:kraft?'Intensives Training erhöht Mg-Verlust – Bisglycinat für beste Aufnahme':'Muskelentspannung, Schlaf und Nervensystem'});
+  if (vegan&&!hatB12) E.push({id:'vitamin_b12',prioritaet:'essential',kategorie:'gesundheit',name:'Vitamin B12',ikon:'🧪',fit_grund:'Als Veganer medizinisch notwendig – nur in tierischen Produkten enthalten'});
+
+  // Protein
+  if (!hatProt&&!wenig) {
+    var pId=vegan?'pflanzenprotein':(hatLaktose||erfahrung==='profi'?'iso_clear':'whey_protein');
+    var kg=parseFloat(a.gewicht)||75,pb=Math.round(kg*(mu&&kraft?2:mu?1.8:1.6));
+    E.push({id:pId,prioritaet:'essential',kategorie:'performance',name:vegan?'Pflanzenprotein':(hatLaktose?'ISO Clear (laktosefrei)':'Whey Protein'),ikon:'💪',fit_grund:'Protein-Tagesziel: '+pb+' g – ohne Supplement kaum erreichbar'});
+  }
+  // Kreatin
+  if (!hatKreat&&(mu||kraft||mix&&mu)&&!hatNiere) E.push({id:'kreatin',prioritaet:'essential',kategorie:'performance',name:'Kreatin Monohydrat',ikon:'⚡',fit_grund:'#1 evidenzbasiertes Supplement – 500+ Studien, 5–15% Kraftsteigerung'});
+
+  // EMPFOHLEN
+  if (w&&(ausd||health)&&alter!=='A') E.push({id:'eisen',prioritaet:'empfohlen',kategorie:'gesundheit',name:'Eisen Bisglycinat',ikon:'🩸',fit_grund:'Häufigster Mangel bei Frauen – Bisglycinat für beste Magenverträglichkeit'});
+  if ((regen||(mu&&a.training==='A')||energie||istSchlaf)&&!hatSchildd&&!hatAntiD) E.push({id:'ashwagandha',prioritaet:'empfohlen',kategorie:'wellbeing',name:'Ashwagandha KSM-66',ikon:'🌿',fit_grund:'Senkt Cortisol um 20–30%, verbessert Schlaf und Stressresistenz klinisch belegt'});
+  if (fett&&!wenig) E.push({id:'l_carnitin',prioritaet:'empfohlen',kategorie:'performance',name:'L-Carnitin',ikon:'🔥',fit_grund:'Fettsäurentransport in Mitochondrien – optimiert Fettverbrennung beim Training'});
+  if ((ausd||cardio)&&!wenig) { E.push({id:'beta_alanin',prioritaet:'empfohlen',kategorie:'performance',name:'Beta-Alanin',ikon:'🏃',fit_grund:'Puffert Laktat – verzögert Muskelermüdung bei Ausdauerbelastung um 15–25%'}); E.push({id:'elektrolyte',prioritaet:'empfohlen',kategorie:'performance',name:'Elektrolyte',ikon:'💧',fit_grund:'Ersetzt Na+K+Mg bei Schwitzen – schützt vor Krämpfen und Leistungseinbruch'}); }
+
+  // OPTIONAL
+  if ((fett||health||w)&&erfahrung!=='einsteiger') E.push({id:'vitamin_c',prioritaet:'optional',kategorie:'gesundheit',name:'Vitamin C',ikon:'🍊',fit_grund:w?'Verbessert Eisenaufnahme erheblich':'Immunschutz + Antioxidans bei hohem Trainingsvolumen'});
+  if ((health||regen||mu&&!w)&&erfahrung!=='einsteiger') E.push({id:'zink',prioritaet:'optional',kategorie:'gesundheit',name:'Zink',ikon:'🔷',fit_grund:!w?'Essentiell für Testosteron-Produktion – Sportler verlieren mehr durch Schwitzen':'Immunfunktion und Wundheilung'});
+  if (mu&&kraft&&erfahrung==='profi'&&!vegan) E.push({id:'eaas',prioritaet:'optional',kategorie:'performance',name:'EAAs',ikon:'🔬',fit_grund:'Alle 9 essentiellen Aminosäuren – optimiert Proteinsynthese während dem Training'});
+  if ((ausd||(kraft&&erfahrung==='profi'))&&!wenig) E.push({id:'l_glutamin',prioritaet:'optional',kategorie:'performance',name:'L-Glutamin',ikon:'🛡️',fit_grund:'Darmgesundheit und Immunsystem bei hohem Trainingsvolumen'});
+  if (w&&(alter==='D'||alter==='E'||regen)) E.push({id:'kollagen',prioritaet:'optional',kategorie:'gesundheit',name:'Kollagen Peptide',ikon:'✨',fit_grund:alter==='D'||alter==='E'?'Ab 36: Kollagenproduktion sinkt – Gelenke, Sehnen und Haut':'Gelenk-Support bei hohem Trainingsvolumen'});
+  if (kraft&&erfahrung!=='einsteiger'&&!wenig&&!hatBlutdr&&!hatDiab) E.push({id:'pre_workout',prioritaet:'optional',kategorie:'performance',name:'Pre-Workout Booster',ikon:'🚀',fit_grund:'Koffein + Citrullin + Beta-Alanin – maximale Performance bei schweren Einheiten'});
+  if (istMeno) { E.push({id:'kollagen',prioritaet:'empfohlen',kategorie:'gesundheit',name:'Kollagen Peptide (Wechseljahre)',ikon:'✨',fit_grund:'Haut verliert bis 30% Kollagen in Wechseljahren'}); }
+  if (health&&erfahrung!=='einsteiger') E.push({id:'multivitamin',prioritaet:'optional',kategorie:'gesundheit',name:'Multivitamin',ikon:'🌈',fit_grund:'Allgemeine Mikronährstoff-Absicherung als Basis-Schutz'});
+
+  // Overlaps auflösen
+  var res = loesOverlaps(E);
+  return res.empfehlungen;
+}
+
+// ── LABEL MAPS ──
+var ALT={A:'< 18',B:'18–25',C:'26–35',D:'36–45',E:'> 45'};
+var TRG={A:'Kraft 4+×/Wo',B:'Kraft 2–3×/Wo',C:'Cardio',D:'Mix',E:'Wenig Sport'};
+var ERN={A:'Omnivor',B:'Flexitarisch',C:'Vegetarisch',D:'Vegan'};
+var GES={A:'Männlich',B:'Weiblich',C:'Keine Angabe'};
+var ZIEL={A:'Muskelaufbau',B:'Fettabbau',C:'Energie',D:'Ausdauer',E:'Regeneration',F:'Gesundheit'};
+
+// ── SCREEN STEUERUNG ──
+function zeige(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  var el=document.getElementById(id);
+  if(el){el.classList.add('on');window.scrollTo(0,0);}
+}
+
+// ── PROFIL ──
+
+// ── WIRKSTOFF-ERKLÄRUNGEN ──
+var ERKLAERUNG = {
+  'vitamin_d3':    'Vitamin D ist entscheidend für Immunsystem, Hormonsynthese und Knochengesundheit. Über 60% der Menschen in Mitteleuropa sind mangelhaft versorgt – besonders im Winter.',
+  'omega3':        'Omega-3 Fettsäuren (EPA/DHA) reduzieren Entzündungen, verbessern Herzgesundheit und beschleunigen die Muskelregeneration nach dem Training.',
+  'omega3_vegan':  'Algenöl liefert die gleichen EPA/DHA-Fettsäuren wie Fischöl – rein pflanzlich, nachhaltig und ohne Fischgeschmack. Ideal für Veganer und bei Fischallergie.',
+  'magnesium':     'Magnesium ist an über 300 Enzymprozessen beteiligt. Sportler verlieren mehr durch Schwitzen – Bisglycinat ist die bioverfügbarste Form und fördert Tiefschlaf.',
+  'whey_protein':  'Protein ist der wichtigste Baustein für Muskeln. Ohne ausreichend Protein (ca. 1,6–2g/kg) können Muskeln nicht aufgebaut werden – egal wie intensiv das Training ist.',
+  'iso_clear':     'Whey Isolat ist nahezu laktosefrei und enthält über 86% Protein. Als klarer Drink besonders beliebt in der Definitionsphase oder bei Laktoseintoleranz.',
+  'pflanzenprotein':'Pflanzenprotein aus Erbse und Reis liefert alle essentiellen Aminosäuren. Ideal für Veganer und schützt Muskelmasse genauso effektiv wie Whey.',
+  'kreatin':       'Kreatin ist das am besten erforschte Supplement überhaupt – über 500 Studien belegen 5–15% Kraftsteigerung. Sicher, günstig und wirkt bei jedem zuverlässig.',
+  'vitamin_b12':   'B12 kommt natürlich nur in tierischen Produkten vor. Bei veganer Ernährung ist eine Supplementierung medizinisch notwendig – schützt Nervensystem und Blutbildung.',
+  'eisen':         'Eisenmangel ist der häufigste Nährstoffmangel weltweit und betrifft besonders Frauen. Eisen ist entscheidend für Sauerstofftransport und Energiestoffwechsel.',
+  'ashwagandha':   'Ashwagandha KSM-66 senkt Cortisol nachweislich um 20–30% und verbessert Schlafqualität sowie Stressresistenz. Klinisch belegt und gut verträglich.',
+  'l_carnitin':    'L-Carnitin transportiert Fettsäuren in die Mitochondrien zur Energiegewinnung. Besonders wirksam bei aerobem Training und unterstützt den Fettabbau.',
+  'beta_alanin':   'Beta-Alanin erhöht den Carnosin-Spiegel in Muskeln und puffert Laktat. Das verzögert Muskelermüdung bei hochintensiver Belastung um bis zu 25%.',
+  'elektrolyte':   'Elektrolyte ersetzen Natrium, Kalium und Magnesium die beim Schwitzen verloren gehen. Schützt vor Krämpfen, Leistungsabfall und hält die Hydration aufrecht.',
+  'vitamin_c':     'Vitamin C ist ein starkes Antioxidans, stärkt das Immunsystem und verbessert die Eisenaufnahme erheblich. Besonders wichtig in Diätphasen und bei intensivem Training.',
+  'zink':          'Zink ist essentiell für Immunfunktion, Wundheilung und Hormonsynthese inklusive Testosteron. Sportler verlieren mehr Zink durch Schwitzen als Nichtsportler.',
+  'kollagen':      'Kollagen Typ I+III stärkt Gelenke, Sehnen, Haut und Haare. Ab 30 Jahren sinkt die körpereigene Produktion – Supplementierung wirkt präventiv und regenerativ.',
+  'eaas':          'Essentielle Aminosäuren (EAAs) können vom Körper nicht selbst hergestellt werden. Sie stimulieren die Muskelproteinsynthese optimal – ideal während dem Training.',
+  'l_glutamin':    'L-Glutamin ist die häufigste Aminosäure im Körper und wird bei intensivem Training stark verbraucht. Unterstützt Darmgesundheit und Immunsystem.',
+  'multivitamin':  'Ein Multivitamin schließt alltägliche Mikronährstofflücken in der Ernährung. Als Basisschutz besonders sinnvoll bei einseitiger Ernährung oder hohem Stresslevel.',
+  'zma':           'ZMA – die Kombination aus Zink, Magnesium und Vitamin B6 – verbessert Schlaftiefe und unterstützt die hormonelle Regeneration nach intensivem Training.',
+  'pre_workout':   'Pre-Workout Booster mit Koffein, Citrullin und Beta-Alanin steigern Fokus, Kraft und Ausdauer spürbar. Für intensives Krafttraining bei Fortgeschrittenen.',
+};
+function zeigeProfil() {
+  var a=AW,kg=parseFloat(a.gewicht)||75,cm=parseFloat(a.groesse)||175;
+  var bmi=(kg/((cm/100)*(cm/100))).toFixed(1);
+  var bmiKat=parseFloat(bmi)<18.5?{l:'Untergewicht',c:'#3B82F6'}:parseFloat(bmi)<25?{l:'Normalgewicht',c:'#059669'}:parseFloat(bmi)<30?{l:'Übergewicht',c:'#F59E0B'}:{l:'Adipositas',c:'#EF4444'};
+  var bmiPct=Math.min(100,Math.max(0,((parseFloat(bmi)-15)/25)*100));
+  var avatar=getAvatar(a);
+  var emps=berechneEmpfehlungen(a);
+  var ziele=a.ziele||['F'];
+  var prio={essential:0,empfohlen:1,optional:2};
+  emps.sort(function(x,y){return prio[x.prioritaet]-prio[y.prioritaet];});
+
+  var h='';
+
+  // ── PROFIL HEADER ──
+  h+='<div class="profil-card">';
+  h+='<div class="profil-header">';
+  h+='<div class="avatar-wrap">';
+  h+='<div class="avatar">'+avatar+'</div>';
+  h+='<div class="avatar-info">';
+  h+='<div class="avatar-name">'+(NP.name||'Mein Profil')+'</div>';
+  h+='<div class="avatar-sub">'+(ALT[a.intro]||'')+'  ·  '+(GES[a.geschlecht]||'')+'  ·  '+(ERN[a.ernaehrung]||'')+'</div>';
+  h+='</div></div>';
+  // Progress-Balken
+  var stackAnzahl = Object.keys(meinStack).length;
+  var gesamtAnzahl = emps.length;
+  var stackPct = gesamtAnzahl > 0 ? Math.round((stackAnzahl/gesamtAnzahl)*100) : 0;
+  var stackPreis = 0;
+  Object.keys(meinStack).forEach(function(k){ stackPreis += meinStack[k].preis || 0; });
+
+  h+='<div class="profil-progress-wrap">';
+  h+='<div class="profil-progress-top">';
+  h+='<span class="profil-progress-label">Mein Stack</span>';
+  h+='<span class="profil-progress-count">'+stackAnzahl+' / '+gesamtAnzahl+' Supplements</span>';
+  h+='</div>';
+  h+='<div class="profil-progress-bar">';
+  h+='<div class="profil-progress-fill" style="width:'+stackPct+'%"></div>';
+  h+='</div>';
+  if(stackAnzahl > 0) {
+    h+='<div class="profil-progress-preis">~'+stackPreis.toFixed(0)+' € / Monat ausgewählt</div>';
+  } else {
+    h+='<div class="profil-progress-hint">Tippe auf einen Wirkstoff um Produkte hinzuzufügen</div>';
+  }
+  h+='</div>';
+
+  h+='<div class="profil-stats">';
+  h+='<div class="stat-pill"><div class="stat-pill-label">Gewicht</div><div class="stat-pill-val">'+kg+' kg</div><div class="stat-pill-sub">'+cm+' cm</div></div>';
+  h+='<div class="stat-pill"><div class="stat-pill-label">BMI</div><div class="stat-pill-val" style="color:'+bmiKat.c+'">'+bmi+'</div><div class="stat-pill-sub">'+bmiKat.l+'</div><div class="bmi-bar-wrap"><div class="bmi-bar-fill" style="width:'+bmiPct+'%;background:'+bmiKat.c+'"></div></div></div>';
+  h+='<div class="stat-pill"><div class="stat-pill-label">Training</div><div class="stat-pill-val" style="font-size:12px;">'+(TRG[a.training]||'–')+'</div></div>';
+  h+='<div class="stat-pill"><div class="stat-pill-label">Ziele</div><div class="stat-pill-val" style="font-size:11px;">'+ziele.map(function(z){return ZIEL[z]||z;}).join(', ')+'</div></div>';
+  h+='</div></div>';
+
+  // ── WIRKSTOFF BODY ──
+  h+='<div class="profil-body">';
+  h+='<div class="profil-section-label">Deine Wirkstoffe – tippe für Details & Produkte</div>';
+
+  // Gruppen
+  var gruppen=[
+    {prio:'essential',label:'Essentiell',color:'#FF6B00',bg:'rgba(255,107,0,0.08)',border:'rgba(255,107,0,0.25)'},
+    {prio:'empfohlen',label:'Empfohlen', color:'#3B82F6',bg:'rgba(59,130,246,0.08)', border:'rgba(59,130,246,0.25)'},
+    {prio:'optional', label:'Optional',  color:'#10B981',bg:'rgba(16,185,129,0.08)', border:'rgba(16,185,129,0.25)'},
+  ];
+
+  gruppen.forEach(function(g){
+    var gruppe=emps.filter(function(e){return e.prioritaet===g.prio;});
+    if(!gruppe.length) return;
+
+    h+='<div class="pw-gruppe-label" style="color:'+g.color+';">';
+    h+='<span class="pw-gruppe-dot" style="background:'+g.color+';"></span>'+g.label;
+    h+='</div>';
+
+    gruppe.forEach(function(e){
+      var d=dosis(e.id,a);
+      var imStack=meinStack[e.id];
+      h+='<div class="pw-zeile tipp'+(imStack?' pw-zeile-gewaehlt':'')+'" data-eid="'+e.id+'" data-prio="'+e.prioritaet+'" style="border-color:'+(imStack?g.color:g.border)+';">';
+      h+='<div class="pw-zeile-left">';
+      h+='<div class="pw-zeile-ikon" style="background:'+g.bg+';">'+e.ikon+'</div>';
+      h+='<div class="pw-zeile-info">';
+      h+='<div class="pw-zeile-name">'+e.name+'</div>';
+      if(imStack){
+        h+='<div class="pw-zeile-stack-prod">';
+        h+='<span class="pw-stack-check" style="color:'+g.color+';">✓</span>';
+        h+='<span class="pw-stack-prodname">'+imStack.prod.name+'</span>';
+        h+='</div>';
+      } else {
+        h+='<div class="pw-zeile-meta">'+d.z+' · '+d.d+'</div>';
+      }
+      h+='</div>';
+      h+='</div>';
+      h+='<div class="pw-zeile-rechts">';
+      if(imStack) h+='<div class="pw-zeile-preis" style="color:'+g.color+';">'+imStack.prod.preis+' €</div>';
+      h+='<div class="pw-zeile-pfeil" style="color:'+g.color+';">›</div>';
+      h+='</div>';
+      h+='</div>';
+    });
   });
 
-  document.getElementById('btn-login-skip').addEventListener('click', function() {
-    NP.name = 'Nutzer'; NP.email = '';
-    zeigeErgebnis();
+  h+='</div></div>'; // /profil-body /profil-card
+
+  // ── SHOP BUTTON ──
+  // Stack-Kaufen Button (nur wenn etwas im Stack)
+  if(Object.keys(meinStack).length > 0) {
+    var totalPreis = 0;
+    Object.keys(meinStack).forEach(function(k){ totalPreis += meinStack[k].preis || 0; });
+    h+='<div class="pw-stack-kauf-box">';
+    h+='<div class="pw-stack-kauf-info">';
+    h+='<div class="pw-stack-kauf-label">'+Object.keys(meinStack).length+' Supplements im Stack</div>';
+    h+='<div class="pw-stack-kauf-preis">~'+totalPreis.toFixed(0)+' € / Monat</div>';
+    h+='</div>';
+    h+='<button class="pw-stack-kauf-btn btn-primary tipp" id="btn-stack-kaufen">Stack kaufen ↗</button>';
+    h+='</div>';
+  }
+  h+='<button class="btn-primary" id="btn-zu-shop" style="margin-top:12px;background:rgba(255,255,255,0.06);box-shadow:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:14px;">Alle Produkte ansehen →</button>';
+  h+='<div style="text-align:center;margin-top:12px;"><button class="btn-ghost" id="btn-reset-p">↺ Neu starten</button></div>';
+
+  // ── POPUP ──
+  h+='<div class="pw-overlay" id="pw-overlay" style="display:none;">';
+  h+='<div class="pw-popup" id="pw-popup">';
+  h+='<div class="pw-popup-inner" id="pw-popup-inner"></div>';
+  h+='</div></div>';
+
+  document.getElementById('s-profil').innerHTML=h;
+  zeige('s-profil');
+
+  document.getElementById('btn-zu-shop').addEventListener('click',function(){zeigeShop();});
+  document.getElementById('btn-reset-p').addEventListener('click',function(){resetApp();});
+  var stackKaufBtn = document.getElementById('btn-stack-kaufen');
+  if(stackKaufBtn) {
+    stackKaufBtn.addEventListener('click',function(){
+      var n = Object.keys(meinStack).length;
+      toast('🛒 '+n+' Supplements – Shop-Integration folgt');
+    });
+  }
+
+  // Wirkstoff-Zeilen → Pop-up öffnen
+  document.querySelectorAll('.pw-zeile').forEach(function(row){
+    row.addEventListener('click',function(){
+      var eid=row.getAttribute('data-eid');
+      var prio=row.getAttribute('data-prio');
+      oeffneWirkstoffPopup(eid, prio, a);
+    });
+  });
+
+  // Overlay schließen
+  document.getElementById('pw-overlay').addEventListener('click',function(ev){
+    if(ev.target===this) schliessePopup();
+  });
+}
+
+function oeffneWirkstoffPopup(eid, prio, a) {
+  var db=DB[eid];
+  if(!db) return;
+  var erkl=ERKLAERUNG[eid]||'Wichtiger Wirkstoff für dein Profil.';
+  var d=dosis(eid,a);
+  var prioColor=prio==='essential'?'#FF6B00':prio==='empfohlen'?'#3B82F6':'#10B981';
+  var prioLabel=prio==='essential'?'Essentiell':prio==='empfohlen'?'Empfohlen':'Optional';
+
+  // Alle 3 Produkte (Haupt + 2 Alternativen)
+  var produkte=[db.hauptprodukt].concat(db.alternativen||[]);
+
+  var h='';
+  h+='<div class="pw-popup-header" style="border-color:'+prioColor+'20;">';
+  h+='<div class="pw-popup-title-row">';
+  h+='<div class="pw-popup-ikon">'+getEmpIcon(eid)+'</div>';
+  h+='<div>';
+  h+='<div class="pw-popup-name">'+getEmpName(eid)+'</div>';
+  h+='<div class="pw-popup-prio" style="color:'+prioColor+';background:'+prioColor+'15;">● '+prioLabel+'</div>';
+  h+='</div>';
+  h+='<button class="pw-popup-close tipp" id="pw-close">✕</button>';
+  h+='</div>';
+  h+='<p class="pw-popup-erkl">'+erkl+'</p>';
+  h+='<div class="pw-popup-einnahme">';
+  h+='<div class="pw-einnahme-block"><div class="pw-einnahme-lbl">⏱ EINNAHME</div><div class="pw-einnahme-val">'+d.z+'</div></div>';
+  h+='<div class="pw-einnahme-divider"></div>';
+  h+='<div class="pw-einnahme-block"><div class="pw-einnahme-lbl">💊 DOSIERUNG</div><div class="pw-einnahme-val" style="color:#34D399;">'+d.d+'</div></div>';
+  h+='</div>';
+  h+='</div>';
+
+  h+='<div class="pw-popup-produkte-titel">Verfügbare Produkte</div>';
+  h+='<div class="pw-popup-produkte">';
+  produkte.forEach(function(prod,idx){
+    var isFirst=idx===0;
+    h+='<div class="pw-prod-card'+(isFirst?' pw-prod-best':'')+'">';
+    if(isFirst) h+='<div class="pw-prod-best-badge">★ Empfohlen</div>';
+    h+='<div class="pw-prod-header">';
+    h+='<div>';
+    h+='<div class="pw-prod-marke">'+prod.marke+'</div>';
+    h+='<div class="pw-prod-name">'+prod.name+'</div>';
+    h+='<div class="pw-prod-rating">'+prod.rating+'</div>';
+    h+='</div>';
+    h+='<div class="pw-prod-preis">'+prod.preis+' <span style="font-size:11px;opacity:0.6;">€</span></div>';
+    h+='</div>';
+    h+='<div class="pw-prod-tags">';
+    prod.tags.forEach(function(t){ h+='<span class="pw-prod-tag">'+t+'</span>'; });
+    h+='</div>';
+    var imStack = meinStack[eid] && meinStack[eid].prod.name===prod.name;
+    h+='<button class="pw-prod-kaufen'+(imStack?' pw-prod-im-stack':'')+' tipp" data-eid="'+eid+'" data-pidx="'+(idx===0?-1:idx-1)+'" data-pname="'+prod.name+'" data-marke="'+prod.marke+'">';
+    if(imStack) {
+      h+='<span>✓ Im Stack</span>';
+    } else {
+      h+='<span>Zum Stack hinzufügen</span><span>+</span>';
+    }
+    h+='</button>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  document.getElementById('pw-popup-inner').innerHTML=h;
+  document.getElementById('pw-overlay').style.display='flex';
+  setTimeout(function(){ document.getElementById('pw-popup').classList.add('pw-popup-open'); },10);
+
+  document.getElementById('pw-close').addEventListener('click',schliessePopup);
+  document.querySelectorAll('.pw-prod-kaufen').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var eid = btn.getAttribute('data-eid');
+      var pidx = parseInt(btn.getAttribute('data-pidx'));
+      var db = DB[eid];
+      if (!db) return;
+      var prod = pidx === -1 ? db.hauptprodukt : db.alternativen[pidx];
+      if (!prod) return;
+      // Zum Stack hinzufügen
+      meinStack[eid] = { prod: prod, preis: parseFloat(prod.preis.replace(',','.')) };
+      schliessePopup();
+      setTimeout(function(){
+        // Profil neu rendern damit Zeile aktualisiert wird
+        zeigeProfil();
+        toast('✓ ' + prod.name + ' zum Stack hinzugefügt');
+      }, 300);
+    });
+  });
+}
+
+function schliessePopup() {
+  var popup=document.getElementById('pw-popup');
+  if(popup) popup.classList.remove('pw-popup-open');
+  setTimeout(function(){
+    var overlay=document.getElementById('pw-overlay');
+    if(overlay) overlay.style.display='none';
+  },260);
+}
+
+function getEmpIcon(eid) {
+  var emps=berechneEmpfehlungen(AW);
+  for(var i=0;i<emps.length;i++) if(emps[i].id===eid) return emps[i].ikon;
+  return '💊';
+}
+function getEmpName(eid) {
+  var emps=berechneEmpfehlungen(AW);
+  for(var i=0;i<emps.length;i++) if(emps[i].id===eid) return emps[i].name;
+  return eid;
+}
+
+// ── SHOP (SPORT) ──
+function zeigeShop() {
+  abgewaehlt={}; aufgeklappteAlts={}; gewaehlteAlts={}; aktivTab='essential'; meinStack={};
+  renderShop(); zeige('s-shop');
+}
+
+function renderShop() {
+  var a = AW;
+  var alleEmps = berechneEmpfehlungen(a);
+  var prioRang = {essential:0, empfohlen:1, optional:2};
+  alleEmps.sort(function(x,y){ return prioRang[x.prioritaet]-prioRang[y.prioritaet]; });
+
+  var essEmps = alleEmps.filter(function(e){ return e.prioritaet==='essential'; });
+  var empEmps = alleEmps.filter(function(e){ return e.prioritaet==='empfohlen'; });
+  var optEmps = alleEmps.filter(function(e){ return e.prioritaet==='optional'; });
+
+  // Aktive Liste je nach Tab
+  var tabMap = {
+    essential: essEmps,
+    empfohlen: essEmps.concat(empEmps),
+    complete:  essEmps.concat(empEmps).concat(optEmps)
+  };
+  var aktiveEmps = tabMap[aktivTab] || essEmps;
+
+  function preisListe(emps) {
+    var s=0;
+    emps.forEach(function(e){
+      if(!abgewaehlt[e.id]){
+        var db=DB[e.id]; if(!db) return;
+        var altIdx=gewaehlteAlts[e.id];
+        var prod=(altIdx!==undefined&&db.alternativen&&db.alternativen[altIdx])?db.alternativen[altIdx]:db.hauptprodukt;
+        s+=parseFloat(prod.preis.replace(',','.'));
+      }
+    });
+    return s;
+  }
+
+  var preisEss  = preisListe(essEmps);
+  var preisEssEmp = preisListe(essEmps.concat(empEmps));
+  var preisAll  = preisListe(alleEmps);
+  var preisAktiv = preisListe(aktiveEmps);
+  var anzahlAktiv = aktiveEmps.filter(function(e){ return !abgewaehlt[e.id]; }).length;
+
+  // ── PRODUKT-KARTE ──
+  function prodKarte(e) {
+    var db = DB[e.id]; if(!db) return '';
+    var altIdx = gewaehlteAlts[e.id];
+    var prod = (altIdx!==undefined && db.alternativen && db.alternativen[altIdx]) ? db.alternativen[altIdx] : db.hauptprodukt;
+    var d = dosis(e.id, a);
+    var istAus = abgewaehlt[e.id]===true;
+    var istAlt = altIdx !== undefined;
+
+    var prioBorderColor = e.prioritaet==='essential'?'rgba(255,107,0,0.35)':e.prioritaet==='empfohlen'?'rgba(59,130,246,0.3)':'rgba(16,185,129,0.3)';
+    var prioAccent = e.prioritaet==='essential'?'#FF6B00':e.prioritaet==='empfohlen'?'#3B82F6':'#10B981';
+
+    var h = '';
+    h += '<div class="pk-karte'+(istAus?' pk-aus':'')+'" data-prio="'+e.prioritaet+'" style="border-color:'+prioBorderColor+';">';
+
+    // ── LINKER STREIFEN ──
+    h += '<div class="pk-streifen" style="background:'+prioAccent+';"></div>';
+
+    // ── HAUPT-BEREICH ──
+    h += '<div class="pk-main">';
+
+    // ZEILE 1: Icon + Wirkstoff + Preis + Toggle
+    h += '<div class="pk-zeile1">';
+    h += '<div class="pk-ikon">'+e.ikon+'</div>';
+    h += '<div class="pk-kopf">';
+    h += '<div class="pk-wirkstoff">'+e.name+(istAlt?' <span class="pk-alt-badge">ALT</span>':'')+'</div>';
+    h += '<div class="pk-prodname">'+prod.name+'</div>';
+    h += '<div class="pk-marke">'+prod.marke+'</div>';
+    h += '</div>';
+    h += '<div class="pk-rechts">';
+    if(!istAus) {
+      h += '<div class="pk-preis">'+prod.preis+' <span class="pk-preis-eur">€</span></div>';
+      h += '<div class="pk-rating">'+prod.rating+'</div>';
+    }
+    h += '<button class="pk-toggle '+(istAus?'aus':'an')+' tipp" data-eid="'+e.id+'">';
+    h += istAus ? '<span style="font-size:16px;">+</span>' : '<span style="font-size:14px;">✓</span>';
+    h += '</button>';
+    h += '</div>';
+    h += '</div>'; // /pk-zeile1
+
+    if(!istAus) {
+      // ZEILE 2: Einnahme-Bar
+      h += '<div class="pk-einnahme-bar">';
+      h += '<div class="pk-einnahme-slot">';
+      h += '<span class="pk-einnahme-icon">⏱</span>';
+      h += '<span class="pk-einnahme-text">'+d.z+'</span>';
+      h += '</div>';
+      h += '<div class="pk-einnahme-divider"></div>';
+      h += '<div class="pk-einnahme-slot">';
+      h += '<span class="pk-einnahme-icon">💊</span>';
+      h += '<span class="pk-einnahme-text pk-dosis-text">'+d.d+'</span>';
+      h += '</div>';
+      h += '</div>';
+
+      // ZEILE 3: Alternativen Chips
+      if(db.alternativen && db.alternativen.length) {
+        h += '<div class="pk-alts">';
+        h += '<span class="pk-alts-label">Marke:</span>';
+        // Hauptprodukt
+        h += '<button class="pk-chip'+(altIdx===undefined?' pk-chip-aktiv':'')+' tipp" data-eid="'+e.id+'" data-altidx="-1">';
+        h += '<span class="pk-chip-marke">'+db.hauptprodukt.marke+'</span>';
+        h += '<span class="pk-chip-preis">'+db.hauptprodukt.preis+' €</span>';
+        h += '</button>';
+        // Alternativen
+        db.alternativen.forEach(function(alt,idx){
+          var gew=altIdx===idx;
+          h += '<button class="pk-chip'+(gew?' pk-chip-aktiv':'')+' tipp" data-eid="'+e.id+'" data-altidx="'+idx+'">';
+          h += '<span class="pk-chip-marke">'+alt.marke+'</span>';
+          h += '<span class="pk-chip-preis">'+alt.preis+' €</span>';
+          h += '</button>';
+        });
+        h += '</div>';
+      }
+    }
+
+    h += '</div>'; // /pk-main
+    h += '</div>'; // /pk-karte
+    return h;
+  }
+
+  // ── HTML AUFBAUEN ──
+  var h = '<div class="shop-wrap">';
+
+  // ── SHOP HEADER ──
+  h += '<div class="shop-nav">';
+  h += '<button class="shop-nav-back tipp" id="btn-back-shop">←</button>';
+  h += '<div class="shop-nav-title">Dein <span>Stack</span></div>';
+  h += '<div class="shop-nav-count">'+anzahlAktiv+' Supplements</div>';
+  h += '</div>';
+
+  // ── PAKET TABS ──
+  var tabs = [
+    {id:'essential', label:'Essential', sub:'Basis', preis:'~'+preisEss.toFixed(0)+'€', color:'#FF6B00'},
+    {id:'empfohlen', label:'Empfohlen', sub:'+ Performance', preis:'~'+preisEssEmp.toFixed(0)+'€', color:'#FF6B00', ideal:true},
+    {id:'complete',  label:'Complete',  sub:'+ Optimierung', preis:'~'+preisAll.toFixed(0)+'€', color:'#10B981'},
+  ];
+  h += '<div class="shop-tabs">';
+  tabs.forEach(function(t){
+    var akt = aktivTab===t.id;
+    h += '<div class="shop-tab'+(akt?' shop-tab-aktiv':'')+' tipp" data-tab="'+t.id+'">';
+    if(t.ideal) h += '<div class="shop-tab-badge">★ IDEAL</div>';
+    h += '<div class="shop-tab-label">'+t.label+'</div>';
+    h += '<div class="shop-tab-sub">'+t.sub+'</div>';
+    h += '<div class="shop-tab-preis" style="color:'+(akt?t.color:'rgba(255,255,255,0.4)')+'">'+t.preis+'</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+
+  // ── PRODUKT LISTE ──
+  h += '<div class="shop-prod-liste">';
+
+  // Gruppierung mit Label
+  var gruppen = [
+    {prio:'essential', label:'ESSENTIALS', color:'#FF6B00', emps:essEmps},
+    {prio:'empfohlen', label:'EMPFOHLEN', color:'#3B82F6', emps:empEmps},
+    {prio:'optional',  label:'OPTIONAL', color:'#10B981', emps:optEmps},
+  ];
+
+  var anzeigeEmps = tabMap[aktivTab] || essEmps;
+
+  gruppen.forEach(function(g){
+    var sichtbar = g.emps.filter(function(e){ return anzeigeEmps.indexOf(e)>=0; });
+    if(!sichtbar.length) return;
+    h += '<div class="shop-gruppe-label"><span style="color:'+g.color+'">▸</span> '+g.label+'</div>';
+    sichtbar.forEach(function(e){ h += prodKarte(e); });
+  });
+
+  h += '</div>'; // /shop-prod-liste
+
+  // ── KAUF LEISTE (FIXED) ──
+  h += '<div class="shop-kauf-leiste" id="shop-kauf-leiste">';
+  h += '<div class="shop-kauf-info">';
+  h += '<div class="shop-kauf-count">'+anzahlAktiv+' Supplements ausgewählt</div>';
+  h += '<div class="shop-kauf-preis">~'+preisAktiv.toFixed(0)+' <span style="font-size:14px;opacity:0.6;">€/Mo</span></div>';
+  h += '</div>';
+  h += '<button class="shop-kauf-btn tipp" id="btn-alle-kaufen">';
+  h += '<span>Jetzt kaufen</span><span class="shop-kauf-arrow">↗</span>';
+  h += '</button>';
+  h += '</div>';
+
+  h += '<div style="height:90px;"></div>';
+  h += '</div>'; // /shop-wrap
+
+  document.getElementById('s-shop').innerHTML = h;
+
+  // ── EVENTS ──
+  document.getElementById('btn-back-shop').addEventListener('click', function(){ zeige('s-profil'); });
+  document.getElementById('btn-alle-kaufen').addEventListener('click', function(){
+    toast('🛒 '+anzahlAktiv+' Produkte – Shop-Integration folgt');
+  });
+
+  document.querySelectorAll('.shop-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      aktivTab = btn.getAttribute('data-tab');
+      renderShop();
+    });
+  });
+
+  document.querySelectorAll('.pk-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var eid=btn.getAttribute('data-eid');
+      if(abgewaehlt[eid]){ delete abgewaehlt[eid]; toast('✓ Wieder hinzugefügt'); }
+      else { abgewaehlt[eid]=true; toast('✕ Abgewählt'); }
+      renderShop();
+    });
+  });
+
+  document.querySelectorAll('.pk-chip').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var eid=btn.getAttribute('data-eid');
+      var idx=parseInt(btn.getAttribute('data-altidx'));
+      if(idx===-1){ delete gewaehlteAlts[eid]; toast('✓ '+DB[eid].hauptprodukt.marke+' gewählt'); }
+      else { gewaehlteAlts[eid]=idx; if(DB[eid]&&DB[eid].alternativen[idx]) toast('✓ '+DB[eid].alternativen[idx].marke+' gewählt'); }
+      renderShop();
+    });
+  });
+}
+
+// ── TOAST ──
+function toast(msg) {
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  setTimeout(function(){t.classList.remove('on');},2800);
+}
+
+// ── RESET ──
+function resetApp() {
+  AW={}; NP={name:'',email:''};
+  abgewaehlt={}; aufgeklappteAlts={};
+  qIdx=0; multiSel=[]; initQueue();
+  zeige('s-start'); toast('↺ App zurückgesetzt.');
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',function(){
+  initQueue();
+  document.getElementById('btn-start').addEventListener('click',function(){zeigeQuiz();});
+  document.getElementById('btn-reset').addEventListener('click',function(){resetApp();});
+  document.getElementById('btn-reset2').addEventListener('click',function(){resetApp();});
+  document.getElementById('btn-login').addEventListener('click',function(){
+    NP.name=document.getElementById('inp-name').value.trim()||'Nutzer';
+    NP.email=document.getElementById('inp-email').value.trim()||'';
+    zeigeProfil();
+  });
+  document.getElementById('btn-skip').addEventListener('click',function(){
+    NP.name='Nutzer'; zeigeProfil();
   });
 });
 </script>
