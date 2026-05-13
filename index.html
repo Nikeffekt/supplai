@@ -702,19 +702,21 @@ button{cursor:pointer;touch-action:manipulation;font-family:var(--font-b);}
   border-radius: 50%;
 }
 
-.sport-start-eyebrow {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: rgba(255,107,0,0.8);
+  background: rgba(255,107,0,0.12);
+  border: 1px solid rgba(255,107,0,0.3);
+  border-radius: 100px;
+  padding: 5px 14px;
+  color: #FF8C00;
   margin-bottom: 20px;
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
-.sport-start-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
   background: #FF6B00;
@@ -2010,6 +2012,612 @@ body::after {
   color: #FF8C00 !important;
 }
 
+
+/* ══════════════════════════════════════
+   USP – Full-Width Impact Cards
+══════════════════════════════════════ */
+.usp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px 8px;
+}
+
+.usp-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 20px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #161616;
+  min-height: 140px;
+}
+
+.usp-card-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,rgba(255,107,0,0.18),rgba(255,140,0,0.06));
+  z-index: 0;
+}
+
+/* Große Zahl im Hintergrund */
+.usp-card-num {
+  position: absolute;
+  bottom: -10px;
+  right: 12px;
+  font-family: 'Barlow Condensed','Impact',sans-serif;
+  font-size: 100px;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(255,107,0,0.12);
+  z-index: 1;
+  letter-spacing: -4px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.usp-card-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 2;
+  line-height: 1;
+}
+
+.usp-card-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.usp-card-title {
+  font-family: 'Barlow Condensed','Impact',sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 40%, #FF8C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.usp-card-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  margin-bottom: 14px;
+  max-width: 340px;
+}
+
+.usp-card-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid;
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+}
+
+
+/* ══════════════════════════════════════
+   HERO – Titel als Button + Kohle-Text + BG Icons
+══════════════════════════════════════ */
+
+/* Hintergrund-Icons */
+.hero-bg-icons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.hbi {
+  position: absolute;
+  font-size: 64px;
+  opacity: 0.04;
+  filter: grayscale(100%);
+  user-select: none;
+  line-height: 1;
+}
+.hbi-1 { top: 8%;  left: -4%;  font-size: 90px; transform: rotate(-20deg); opacity: 0.05; }
+.hbi-2 { top: 30%; right: -2%; font-size: 80px; transform: rotate(15deg);  opacity: 0.04; }
+.hbi-3 { top: 60%; left: 5%;   font-size: 70px; transform: rotate(-10deg); opacity: 0.04; }
+.hbi-4 { top: 5%;  right: 20%; font-size: 56px; transform: rotate(25deg);  opacity: 0.05; }
+.hbi-5 { top: 50%; right: 5%;  font-size: 75px; transform: rotate(-15deg); opacity: 0.04; }
+.hbi-6 { top: 75%; left: 30%;  font-size: 60px; transform: rotate(8deg);   opacity: 0.04; }
+.hbi-7 { top: 20%; left: 25%;  font-size: 50px; transform: rotate(-30deg); opacity: 0.03; }
+.hbi-8 { top: 80%; right: 20%; font-size: 55px; transform: rotate(20deg);  opacity: 0.04; }
+
+/* ── DEIN STACK – Echter Button ── */
+.hero-stack-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: linear-gradient(170deg, #1e1e1e 0%, #141414 60%, #0f0f0f 100%);
+  border: 1.5px solid rgba(255,107,0,0.5);
+  border-radius: 24px;
+  padding: 22px 28px 18px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 24px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow:
+    0 12px 40px rgba(255,107,0,0.25),
+    0 4px 12px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 1px 0 rgba(255,255,255,0.08) inset;
+  width: 100%;
+  overflow: hidden;
+}
+.hero-stack-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.hero-stack-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,107,0,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-stack-btn:active {
+  transform: scale(0.985) translateY(2px);
+  box-shadow:
+    0 6px 20px rgba(255,107,0,0.2),
+    0 2px 6px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(255,255,255,0.03) inset;
+}
+
+/* Label oben */
+.hero-btn-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,107,0,0.7);
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero-btn-label-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #FF6B00;
+  animation: puls 2s infinite;
+}
+
+.hero-stack-dein {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(48px, 13vw, 76px);
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.88);
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+.hero-stack-stack {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(60px, 17vw, 96px);
+  font-weight: 900;
+  line-height: 0.86;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #FF6B00 0%, #FFB347 40%, #FF8C00 70%, #FF6B00 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-flow 3s ease infinite;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+@keyframes gradient-flow {
+  0%   { background-position: 0% center; }
+  50%  { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+/* Pfeil-Zeile unten */
+.hero-btn-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  z-index: 2;
+}
+.hero-btn-cta {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.hero-btn-arrow-wrap {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(255,107,0,0.4);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* ── SUBTEXT KNALLFARBEN ── */
+.hero-sub-knall {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+.hsk-num {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(36px, 9vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #FF6B00, #FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+.hsk-fragen {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(28px, 7vw, 44px);
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #fff;
+  line-height: 1;
+}
+.hsk-sep {
+  font-size: 20px;
+  color: rgba(255,107,0,0.5);
+  font-weight: 900;
+  line-height: 1;
+}
+.hsk-text {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(22px, 5vw, 34px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  line-height: 1;
+}
+.hsk-highlight {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: clamp(28px, 7vw, 44px);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1;
+  background: linear-gradient(135deg, #FF6B00 0%, #FFB347 50%, #FF6B00 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-flow 3s ease infinite;
+}
+
+/* Alten sport-start-hero Styles überschreiben */
+.sport-start-hero {
+  padding: 36px 24px 28px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background: none !important;
+}
+.sport-start-hero::before,
+.sport-start-hero::after { display: none !important; }
+
+/* Alten btn-sport-start ausblenden (nicht mehr vorhanden) */
+.btn-sport-start { display: none !important; }
+.sport-start-h1  { display: none !important; }
+.sport-start-sub { display: none !important; }
+
+
+/* ── HERO FEATURES ZEILE ── */
+.hero-sub-knall {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.hsk-zeile1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+.hsk-features {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.hsk-features::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    rgba(255,107,0,0.06) 0%,
+    transparent 33%,
+    rgba(59,130,246,0.06) 66%,
+    transparent 100%);
+  pointer-events: none;
+}
+.hsk-feat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px;
+  position: relative;
+}
+.hsk-feat-icon {
+  font-size: 22px;
+  line-height: 1;
+  display: block;
+}
+.hsk-feat-label {
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #fff 30%, rgba(255,107,0,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  line-height: 1.2;
+}
+.hsk-feat:nth-child(3) .hsk-feat-label {
+  background: linear-gradient(135deg, #fff 30%, rgba(59,130,246,0.9) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.hsk-feat:nth-child(5) .hsk-feat-label {
+  background: linear-gradient(135deg, #fff 30%, rgba(16,185,129,0.9) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.hsk-feat-div {
+  width: 1px;
+  height: 40px;
+  background: rgba(255,255,255,0.07);
+  flex-shrink: 0;
+}
+
+
+/* ── SUPPLEMENT TICKER ── */
+.hero-ticker-wrap {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  margin: 0 -24px;
+  padding: 0;
+}
+.hero-ticker-wrap::before,
+.hero-ticker-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60px;
+  z-index: 3;
+  pointer-events: none;
+}
+.hero-ticker-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, #111111, transparent);
+}
+.hero-ticker-wrap::after {
+  right: 0;
+  background: linear-gradient(-90deg, #111111, transparent);
+}
+.hero-ticker {
+  display: flex;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  overflow: hidden;
+}
+.hero-ticker-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  white-space: nowrap;
+  animation: ticker-scroll 28s linear infinite;
+  will-change: transform;
+}
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ht-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  font-family: 'Barlow Condensed', 'Impact', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.ht-item:hover { color: rgba(255,107,0,0.8); }
+.ht-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+.ht-dot {
+  color: rgba(255,107,0,0.3);
+  font-size: 16px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+
+/* ══════════════════════════════════════
+   USP RADIAL DIAGRAM
+══════════════════════════════════════ */
+.usp-radial-wrap {
+  position: relative;
+  padding: 16px 16px 8px;
+  display: grid;
+  grid-template-rows: auto;
+}
+
+/* SVG Verbindungen – absolut hinter allem */
+.usp-svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -52%);
+  width: 320px;
+  height: 280px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Zentrum */
+.usp-center-ring {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a1a, #111);
+  border: 1.5px solid rgba(255,107,0,0.4);
+  box-shadow: 0 0 32px rgba(255,107,0,0.2), 0 0 0 8px rgba(255,107,0,0.04);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  position: relative;
+  z-index: 2;
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+@keyframes pulse-ring {
+  0%,100% { box-shadow: 0 0 24px rgba(255,107,0,0.2), 0 0 0 6px rgba(255,107,0,0.04); }
+  50%      { box-shadow: 0 0 40px rgba(255,107,0,0.35), 0 0 0 12px rgba(255,107,0,0.06); }
+}
+.usp-center-inner { text-align: center; }
+.usp-center-icon { font-size: 26px; line-height: 1; margin-bottom: 2px; }
+.usp-center-text {
+  font-family: 'Barlow Condensed','Impact',sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 1.1;
+  background: linear-gradient(135deg,#FF6B00,#FFB347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 4-Node Grid um das Zentrum */
+.usp-node-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.usp-node {
+  border-radius: 16px;
+  padding: 14px 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  position: relative;
+  overflow: hidden;
+  background: #161616;
+  transition: transform 0.2s;
+}
+.usp-node:active { transform: scale(0.97); }
+
+/* Glow-Ecke oben rechts */
+.usp-node::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  opacity: 0.15;
+}
+.usp-node-orange { border-color: rgba(255,107,0,0.25); }
+.usp-node-orange::before { background: #FF6B00; }
+.usp-node-blue   { border-color: rgba(59,130,246,0.25); }
+.usp-node-blue::before   { background: #3B82F6; }
+.usp-node-green  { border-color: rgba(16,185,129,0.25); }
+.usp-node-green::before  { background: #10B981; }
+.usp-node-purple { border-color: rgba(139,92,246,0.25); }
+.usp-node-purple::before { background: #8B5CF6; }
+
+.usp-node-icon {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 8px;
+  display: block;
+}
+.usp-node-title {
+  font-family: 'Barlow Condensed','Impact',sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 5px;
+}
+.usp-node-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.5;
+}
+
+/* Node Akzentfarbe im Titel */
+.usp-node-orange .usp-node-title { color: #FF8C00; }
+.usp-node-blue   .usp-node-title { color: #60A5FA; }
+.usp-node-green  .usp-node-title { color: #34D399; }
+.usp-node-purple .usp-node-title { color: #A78BFA; }
+
 </style>
 </head>
 <body>
@@ -2027,71 +2635,147 @@ body::after {
 
       <!-- Hero Block -->
       <div class="sport-start-hero">
-        <div class="sport-start-eyebrow">
-          <span class="sport-start-dot"></span>
-          PERSONALISIERT · EVIDENZBASIERT
+
+        <!-- Hintergrund Fitness Icons -->
+        <div class="hero-bg-icons" aria-hidden="true">
+          <span class="hbi hbi-1">🏋️</span>
+          <span class="hbi hbi-2">💪</span>
+          <span class="hbi hbi-3">🥇</span>
+          <span class="hbi hbi-4">⚡</span>
+          <span class="hbi hbi-5">🏆</span>
+          <span class="hbi hbi-6">🔥</span>
+          <span class="hbi hbi-7">💊</span>
+          <span class="hbi hbi-8">🧬</span>
         </div>
-        <h1 class="sport-start-h1">DEIN<br><span>STACK.</span></h1>
-        <p class="sport-start-sub">12 Fragen. Deine exakte Supplement-Zusammenstellung – mit Dosierungen, Einnahmezeiten und Alternativen.</p>
-        <button class="btn-sport-start" id="btn-start">
-          <span>Quiz starten</span>
-          <span class="btn-start-arrow">→</span>
+
+
+        <!-- Supplement Ticker -->
+        <div class="hero-ticker-wrap">
+          <div class="hero-ticker">
+            <div class="hero-ticker-inner">
+              <span class="ht-item"><span class="ht-icon">💪</span>Whey Protein</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">⚡</span>Kreatin</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">☀️</span>Vitamin D3</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🐟</span>Omega-3</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🌙</span>Magnesium</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🌿</span>Ashwagandha</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🔥</span>L-Carnitin</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🧬</span>Vitamin B12</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🏃</span>Beta-Alanin</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🛡️</span>Zink</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">💪</span>Whey Protein</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">⚡</span>Kreatin</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">☀️</span>Vitamin D3</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🐟</span>Omega-3</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🌙</span>Magnesium</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🌿</span>Ashwagandha</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🔥</span>L-Carnitin</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🧬</span>Vitamin B12</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🏃</span>Beta-Alanin</span>
+              <span class="ht-dot">·</span>
+              <span class="ht-item"><span class="ht-icon">🛡️</span>Zink</span>
+              <span class="ht-dot">·</span>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <!-- Titel = Button -->
+        <button class="hero-stack-btn" id="btn-start">
+          <div class="hero-btn-label">
+            <span class="hero-btn-label-dot"></span>
+            KI-gestützt · Starte jetzt
+          </div>
+          <span class="hero-stack-dein">DEIN</span>
+          <span class="hero-stack-stack">STACK.</span>
+          <div class="hero-btn-footer">
+            <span class="hero-btn-cta">Jetzt starten</span>
+            <div class="hero-btn-arrow-wrap">→</div>
+          </div>
         </button>
+
+
+
       </div>
 
-      <!-- Stats Zeile -->
-      <div class="sport-start-stats">
-        <div class="sport-stat">
-          <div class="sport-stat-val">12</div>
-          <div class="sport-stat-label">Fragen</div>
-        </div>
-        <div class="sport-stat-divider"></div>
-        <div class="sport-stat">
-          <div class="sport-stat-val">21</div>
-          <div class="sport-stat-label">Supplements</div>
-        </div>
-        <div class="sport-stat-divider"></div>
-        <div class="sport-stat">
-          <div class="sport-stat-val">3</div>
-          <div class="sport-stat-label">Alternativen</div>
-        </div>
-        <div class="sport-stat-divider"></div>
-        <div class="sport-stat">
-          <div class="sport-stat-val">100%</div>
-          <div class="sport-stat-label">Personalisiert</div>
-        </div>
-      </div>
+      <!-- USP Radial Diagram -->
+      <div class="usp-radial-wrap">
 
-      <!-- Feature Tiles -->
-      <div class="sport-start-feats">
-        <div class="sport-feat">
-          <div class="sport-feat-icon">🎯</div>
-          <div class="sport-feat-body">
-            <div class="sport-feat-title">Präzise Empfehlung</div>
-            <div class="sport-feat-desc">Nur was dein Profil wirklich braucht – kein unnötiger Overhead</div>
+        <!-- Zentrales Element -->
+        <div class="usp-center-ring">
+          <div class="usp-center-inner">
+            <div class="usp-center-icon">🧬</div>
+            <div class="usp-center-text">DEIN<br>STACK</div>
           </div>
         </div>
-        <div class="sport-feat">
-          <div class="sport-feat-icon">⏱</div>
-          <div class="sport-feat-body">
-            <div class="sport-feat-title">Einnahmeplan</div>
-            <div class="sport-feat-desc">Wann und wie viel – exakt berechnet nach deinem Körpergewicht</div>
+
+        <!-- 4 Nodes im Kreislayout -->
+        <div class="usp-node-grid">
+          <div class="usp-node usp-node-orange">
+            <div class="usp-node-icon">🎯</div>
+            <div class="usp-node-title">PRÄZISE</div>
+            <div class="usp-node-sub">Nur was du wirklich brauchst – kein Overhead</div>
+          </div>
+          <div class="usp-node usp-node-blue">
+            <div class="usp-node-icon">⏱</div>
+            <div class="usp-node-title">EINNAHME-<br>PLAN</div>
+            <div class="usp-node-sub">Exakt berechnet nach deinem Körper</div>
+          </div>
+          <div class="usp-node usp-node-green">
+            <div class="usp-node-icon">🏆</div>
+            <div class="usp-node-title">TOP<br>BRANDS</div>
+            <div class="usp-node-sub">3 Produkte pro Supplement zur Wahl</div>
+          </div>
+          <div class="usp-node usp-node-purple">
+            <div class="usp-node-icon">🛡️</div>
+            <div class="usp-node-title">MED.<br>CHECKS</div>
+            <div class="usp-node-sub">Automatisch geprüft &amp; sicher</div>
           </div>
         </div>
-        <div class="sport-feat">
-          <div class="sport-feat-icon">🔄</div>
-          <div class="sport-feat-body">
-            <div class="sport-feat-title">Alternativen</div>
-            <div class="sport-feat-desc">2–3 Produkte pro Supplement – du entscheidest welche Marke</div>
-          </div>
-        </div>
-        <div class="sport-feat">
-          <div class="sport-feat-icon">🛡️</div>
-          <div class="sport-feat-body">
-            <div class="sport-feat-title">Medizinische Checks</div>
-            <div class="sport-feat-desc">Wechselwirkungen und Ausschlüsse werden automatisch geprüft</div>
-          </div>
-        </div>
+
+        <!-- SVG Verbindungslinien -->
+        <svg class="usp-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="lg-o" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FF6B00" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#FF6B00" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- Äußerer Kreis -->
+          <circle cx="160" cy="140" r="90" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <circle cx="160" cy="140" r="60" fill="none" stroke="rgba(255,107,0,0.08)" stroke-width="1" stroke-dasharray="4 4"/>
+          <!-- Verbindungslinien zu den 4 Nodes -->
+          <line x1="160" y1="140" x2="80" y2="60"  stroke="rgba(255,107,0,0.3)"  stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="160" y1="140" x2="240" y2="60"  stroke="rgba(59,130,246,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="160" y1="140" x2="80" y2="220"  stroke="rgba(16,185,129,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="160" y1="140" x2="240" y2="220" stroke="rgba(139,92,246,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+          <!-- Punkte an den Verbindungen -->
+          <circle cx="80"  cy="60"  r="3" fill="#FF6B00" opacity="0.6"/>
+          <circle cx="240" cy="60"  r="3" fill="#3B82F6" opacity="0.6"/>
+          <circle cx="80"  cy="220" r="3" fill="#10B981" opacity="0.6"/>
+          <circle cx="240" cy="220" r="3" fill="#8B5CF6" opacity="0.6"/>
+          <!-- Zentrum-Glow -->
+          <circle cx="160" cy="140" r="30" fill="url(#lg-o)" opacity="0.4"/>
+        </svg>
+
       </div>
 
       <!-- Trust -->
